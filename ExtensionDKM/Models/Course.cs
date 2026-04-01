@@ -6,22 +6,30 @@ namespace ExtensionDKM.Models
     public class Assign
     {
         [Key]
-        public int id { get; set; }
+        public int Id { get; set; }
 
-        public int userId {  get; set; }
+        public int UserId {  get; set; }
         public User User { get; set; }
 
-        public int courseId { get; set; }
+        public int CourseId { get; set; }
         public Course Course { get; set; }
     }
 
     public class Course
     {
-        public int id { get; set; }
+        [Key]
+        public int Id { get; set; }
         public int Credit { get; set; }
 
-        public Course PreviousCourse { get; set; }
-        public Course RequirementCourse { get; set; }
+        // FK for PreviousCourse
+        //public int? PreviousCourseId { get; set; }
+        //[ForeignKey("PreviousCourseId")]
+        public List<Course>? PreviousCourse { get; set; }= new List<Course>();
+
+        // FK for RequirementCourse
+        //public int? RequirementCourseId { get; set; }
+        //[ForeignKey("RequirementCourseId")]
+        public List<Course>? RequirementCourse { get; set; }=new List<Course>();
         public List<Assign>? Assignments { get; set; } = new List<Assign>();
 
         public Score Score { get; set; }
@@ -31,13 +39,16 @@ namespace ExtensionDKM.Models
 
     public class ScoreTable
     {
-        public int id {  get; set; }
+        [Key]
+        public int Id {  get; set; }
         public double GPA { get; set; }
+        public List<Course> Courses { get; set; }=new List<Course>();
+
     }
 
     public class Score
     {
-        public int id { get; set; }
+        public int Id { get; set; }
         public int ProgressTerm { get; set; }
         public int MidTerm { get; set; }
         public int FinalTerm { get; set; }
@@ -46,7 +57,8 @@ namespace ExtensionDKM.Models
 
     public class Classroom
     {
-        public int id { get; set; }
+        [Key]
+        public int Id { get; set; }
         public TimeSpan Time { get; set; }
     }
 }
