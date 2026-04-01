@@ -1,0 +1,26 @@
+﻿@model ExtensionDKM.Models.User
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<h1>Login</h1>
+
+<div>
+    <form action="/Login" method="post">
+        <div>
+            <div>
+                <label>Username</label>
+                <input name="name" type="text" required/>
+            </div>
+            <div>
+                <label>Password</label>
+                <input name="password" type="password" required />
+            </div>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+</div>
+<div>
+    <a asp-controller="Home" asp-action="Index">Back to Home</a>
+</div>
