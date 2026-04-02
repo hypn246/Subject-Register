@@ -4,23 +4,83 @@
     ViewData["Title"] = "Login";
 }
 
-<h1>Login</h1>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<div>
-    <form action="/Login" method="post">
-        <div>
-            <div>
-                <label>Username</label>
-                <input name="name" type="text" required/>
-            </div>
-            <div>
-                <label>Password</label>
-                <input name="password" type="password" required />
-            </div>
+<style>
+    .login-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-pill {
+        background-color: #f0f2f5;
+        border-radius: 50px;
+        padding: 8px 20px;
+    }
+    
+    
+    .input-pill input {
+        background: transparent;
+        border: none;
+        box-shadow: none !important;
+        outline: none;
+    }
+    
+    .btn-login {
+        background-color: #6bb955; 
+        border-color: #6bb955;
+        border-radius: 50px;
+    }
+    .btn-login:hover {
+        background-color: #5aa046;
+    }
+</style>
+
+<h1>Login</h1>
+    <div class="row w-100 align-items-center justify-content-center">
+        
+        <div class="col-md-6 text-center d-none d-md-block">
+            <img src="~/css/img/cat-war.png" />
         </div>
-        <button type="submit">Login</button>
-    </form>
-</div>
-<div>
-    <a asp-controller="Home" asp-action="Index">Back to Home</a>
-</div>
+
+        <div class="col-md-5 col-lg-4 px-3">
+            
+            <h2 class="text-center fw-bold mb-5" style="color: #333;">Member Login</h2>
+
+            <form method="post">
+                
+                <div class="mb-4">
+                    <label class="form-label ms-3 fw-semibold text-muted small">Username</label>
+                    <div class="input-pill d-flex align-items-center">
+                        <i class="fas fa-envelope text-muted me-3"></i>
+                        <input name="username" type="text" required class="form-control w-100" />
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label ms-3 fw-semibold text-muted small">Password</label>
+                    <div class="input-pill d-flex align-items-center">
+                        <i class="fas fa-lock text-muted me-3"></i>
+                        <input name="password" type="password" required class="form-control w-100" />
+                    </div>
+                </div>
+
+                <div class="mt-4 mb-3">
+                    <button type="submit" class="btn btn-login w-100 py-2 text-white fw-bold shadow-sm">LOGIN</button>
+                </div>
+
+                @* <div class="text-center mb-5">
+                    <a href="#" class="text-decoration-none text-muted small">Forgot Username / Password?</a>
+                </div> *@
+
+            </form>
+
+            <div class="text-center mt-5">
+                <a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted small fw-semibold">
+                    &larr; Back to Home
+                </a>
+            </div>
+
+        </div>
+    </div>
