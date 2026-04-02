@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ExtensionDKM")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+48afdd5e19d45951919c4e292d0b67d51642c25d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+84411d66f7f4cc43f9c42326eb46fe683b5da746")]
 [assembly: System.Reflection.AssemblyProductAttribute("ExtensionDKM")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ExtensionDKM")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
