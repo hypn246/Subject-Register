@@ -10,22 +10,22 @@ using ExtensionDKM.Models;
 
 namespace ExtensionDKM.Controllers
 {
-    public class UsersController : Controller
+    public class MajorsController : Controller
     {
         private readonly MyDBContext _context;
 
-        public UsersController(MyDBContext context)
+        public MajorsController(MyDBContext context)
         {
             _context = context;
         }
 
-        // GET: Users
+        // GET: Majors
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Users.ToListAsync());
+            return View(await _context.Majors.ToListAsync());
         }
 
-        // GET: Users/Details/5
+        // GET: Majors/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,68 +33,62 @@ namespace ExtensionDKM.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users
+            var major = await _context.Majors
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+            if (major == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            return View(major);
         }
 
-        // GET: Users/Create
+        // GET: Majors/Create
         public IActionResult Create()
         {
-            ViewBag.Majors = new SelectList(_context.Majors, "Id", "Name");
             return View();
         }
 
-        // POST: Users/Create - modified
+        // POST: Majors/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(String Role,[Bind("Name,Username,Password,MajorId")] User user)
+        public async Task<IActionResult> Create([Bind("Id,Name")] Major major)
         {
-            if (Role == "Admin")
-                user.Role=UserRole.Admin;
-            else if (Role == "Lecturer")
-                user.Role = UserRole.Lecturer;
-            else
-                user.Role = UserRole.Student;
-            //
             if (ModelState.IsValid)
             {
-                _context.Users.Add(user);
+                _context.Add(major);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
-
-            return View(user);
+            return View(major);
         }
 
-        // GET: Users/Edit/5
+        // GET: Majors/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            ViewBag.Majors = new SelectList(_context.Majors, "Id", "Name");
             if (id == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var major = await _context.Majors.FindAsync(id);
+            if (major == null)
             {
                 return NotFound();
             }
-            return View(user);
+            return View(major);
         }
 
-        // POST: Users/Edit/5  - modified
+        // POST: Majors/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, String Role, [Bind("Name,Username,Password,MajorId")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Major major)
         {
-            if (id != user.Id)
+            if (id != major.Id)
             {
                 return NotFound();
             }
@@ -103,12 +97,12 @@ namespace ExtensionDKM.Controllers
             {
                 try
                 {
-                    _context.Update(user);
+                    _context.Update(major);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserExists(user.Id))
+                    if (!MajorExists(major.Id))
                     {
                         return NotFound();
                     }
@@ -119,10 +113,10 @@ namespace ExtensionDKM.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(major);
         }
 
-        // GET: Users/Delete/5
+        // GET: Majors/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -130,34 +124,34 @@ namespace ExtensionDKM.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users
+            var major = await _context.Majors
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+            if (major == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            return View(major);
         }
 
-        // POST: Users/Delete/5
+        // POST: Majors/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user != null)
+            var major = await _context.Majors.FindAsync(id);
+            if (major != null)
             {
-                _context.Users.Remove(user);
+                _context.Majors.Remove(major);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UserExists(int id)
+        private bool MajorExists(int id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _context.Majors.Any(e => e.Id == id);
         }
     }
 }

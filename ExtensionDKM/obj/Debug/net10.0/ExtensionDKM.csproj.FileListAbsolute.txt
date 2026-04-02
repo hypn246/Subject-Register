@@ -338,3 +338,4 @@ C:\Users\admin\Desktop\lab\LTCSDL\asp\ExtensionDKM\ExtensionDKM\bin\Debug\net10.
 C:\Users\admin\Desktop\lab\LTCSDL\asp\ExtensionDKM\ExtensionDKM\bin\Debug\net10.0\tr\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\Users\admin\Desktop\lab\LTCSDL\asp\ExtensionDKM\ExtensionDKM\bin\Debug\net10.0\zh-Hans\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\Users\admin\Desktop\lab\LTCSDL\asp\ExtensionDKM\ExtensionDKM\bin\Debug\net10.0\zh-Hant\Microsoft.CodeAnalysis.Scripting.resources.dll
+C:\Users\admin\Desktop\lab\LTCSDL\asp\ExtensionDKM\ExtensionDKM\bin\Debug\net10.0\libman.json
