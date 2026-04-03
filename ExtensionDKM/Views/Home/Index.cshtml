@@ -1,8 +1,27 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    ViewData["UserFullName"] = User.FindFirst("Fullname");
 }
 
 <div class="text-center">
-    <h1 class="display-4">Assign course for students</h1>
-    <p><a href="/Login">Login to continue</a>.</p>
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        @if (User.IsInRole("Admin"))
+        {
+            <h1 class="display-4">Assign and management for admin</h1>
+        }
+        else if (User.IsInRole("Lecturer"))
+        {
+            <h1 class="display-4">Assign class for lecturers</h1>
+        }
+        else if (User.IsInRole("Student"))
+        {
+            <h1 class="display-4">Assign course for students</h1>
+        }
+    }
+    else
+    {
+        <h1 class="display-4">DKM Extension</h1>
+        <p><a href="/Login">Login to continue</a>.</p>
+    }
 </div>

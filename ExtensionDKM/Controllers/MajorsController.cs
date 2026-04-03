@@ -1,18 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ExtensionDKM.Data;
+using ExtensionDKM.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ExtensionDKM.Data;
-using ExtensionDKM.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ExtensionDKM.Controllers
 {
+    [Authorize(Roles ="Admin")]
     public class MajorsController : Controller
     {
         private readonly MyDBContext _context;
+
 
         public MajorsController(MyDBContext context)
         {
@@ -22,6 +25,10 @@ namespace ExtensionDKM.Controllers
         // GET: Majors
         public async Task<IActionResult> Index()
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login");
+            }
             return View(await _context.Majors.ToListAsync());
         }
 

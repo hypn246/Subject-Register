@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -37,6 +36,20 @@ namespace ExtensionDKM.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Majors", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Room",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Capacity = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Room", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -142,9 +155,11 @@ namespace ExtensionDKM.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Time = table.Column<TimeSpan>(type: "time", nullable: false),
-                    SS = table.Column<int>(type: "int", nullable: false),
+                    Time = table.Column<int>(type: "int", nullable: true),
+                    RoomId = table.Column<int>(type: "int", nullable: false),
+                    SchoolYear = table.Column<int>(type: "int", nullable: false),
                     Semester = table.Column<int>(type: "int", nullable: false),
+                    SS = table.Column<int>(type: "int", nullable: false),
                     LecturerId = table.Column<int>(type: "int", nullable: false),
                     CourseId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -155,6 +170,12 @@ namespace ExtensionDKM.Migrations
                         name: "FK_Classrooms_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Classrooms_Room_RoomId",
+                        column: x => x.RoomId,
+                        principalTable: "Room",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -234,6 +255,11 @@ namespace ExtensionDKM.Migrations
                 column: "LecturerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Classrooms_RoomId",
+                table: "Classrooms",
+                column: "RoomId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CoursePrevious_PreviousCoursesId",
                 table: "CoursePrevious",
                 column: "PreviousCoursesId");
@@ -280,6 +306,9 @@ namespace ExtensionDKM.Migrations
 
             migrationBuilder.DropTable(
                 name: "Scores");
+
+            migrationBuilder.DropTable(
+                name: "Room");
 
             migrationBuilder.DropTable(
                 name: "Assigns");

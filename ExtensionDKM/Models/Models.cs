@@ -22,7 +22,6 @@ namespace ExtensionDKM.Models
         public string? Password { get; set; }
         public UserRole Role { get; set; }
 
-        // Made nullable because Admins/Lecturers might not have a Major
         public int? MajorId { get; set; }
         public Major? Major { get; set; }
     }
@@ -31,23 +30,22 @@ namespace ExtensionDKM.Models
     {
         public string? Level { get; set; }
 
-        // A Lecturer can open/teach many Classrooms
+        // A Lecturer can open many Classrooms
         public List<Classroom> Classrooms { get; set; } = new();
     }
 
     public class Student : User
     {
-        public int K { get; set; } // Cohort/Year
+        public int K { get; set; }
 
-        // A Student has many enrollments
+        // A Student has many assign
         public List<Assign> Assignments { get; set; } = new();
 
-        // A Student has one ScoreTable (Transcript)
+        // Student has one ScoreTable
         public int? ScoreTableId { get; set; }
         public ScoreTable? ScoreTable { get; set; }
     }
 
-    // Acts as the Enrollment junction between a Student and a Course
     public class Assign
     {
         [Key]
@@ -59,7 +57,7 @@ namespace ExtensionDKM.Models
         public int CourseId { get; set; }
         public Course? Course { get; set; }
 
-        // Each enrollment results in a Score
+        // results in a Score
         public int? ScoreId { get; set; }
         public Score? Score { get; set; }
     }
@@ -70,9 +68,9 @@ namespace ExtensionDKM.Models
         public int Id { get; set; }
 
         [Required]
-        public string? Name { get; set; } // Added from CourseInfo
+        public string? Name { get; set; } 
         public int Credit { get; set; }
-        public int Tuition { get; set; } // Added from CourseInfo
+        public int Tuition { get; set; }
 
         // Prerequisites and dependencies
         public List<Course> PreviousCourses { get; set; } = new();
@@ -80,24 +78,30 @@ namespace ExtensionDKM.Models
         public List<Course> RequirementCourses { get; set; } = new();
         public List<Course> RequiredBy { get; set; } = new();
 
-        // A course can have many student enrollments
+        // A course can have many student
         public List<Assign> Assignments { get; set; } = new();
 
-        // A course can be taught in multiple classrooms over time
+        // A course can be multiple classrooms over time
         public List<Classroom> Classrooms { get; set; } = new();
     }
-
+    public class Room
+    {
+        [Key]
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Capacity { get; set; }
+        public List<Classroom> Classrooms { get; set; } = new();
+    }
     public class Classroom
     {
         [Key]
         public int Id { get; set; }
-        public TimeSpan Time { get; set; }
-
-        // Added missing fields from UML diagram
-        public int SS { get; set; }
+        public int? Time { get; set; }
+        public int RoomId{ get; set; }
+        public Room? Room { get; set; }
+        public int SchoolYear { get; set; }
         public int Semester { get; set; }
-
-        // Taught by 1 Lecturer
+        public int SS { get; set; }
         public int LecturerId { get; set; }
         public Lecturer? Lecturer { get; set; }
 
@@ -129,11 +133,11 @@ namespace ExtensionDKM.Models
         public int FinalTerm { get; set; }
         public int Status { get; set; }
 
-        // Tied back to the specific Student's ScoreTable
+        // Tied back to ScoreTable
         public int ScoreTableId { get; set; }
         public ScoreTable? ScoreTable { get; set; }
 
-        // Tied to the specific Course Enrollment
+        // Tied to the specific Course
         public int AssignId { get; set; }
         public Assign? Assign { get; set; }
     }

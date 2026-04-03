@@ -71,6 +71,7 @@ namespace ExtensionDKM.Data
                 .OnDelete(DeleteBehavior.Cascade); //7
 
         }
+        public DbSet<ExtensionDKM.Models.Room> Room { get; set; } = default!;
 
     }
 

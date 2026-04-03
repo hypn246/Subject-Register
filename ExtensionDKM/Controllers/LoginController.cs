@@ -2,6 +2,7 @@
 using ExtensionDKM.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -39,6 +40,8 @@ namespace ExtensionDKM.Controllers
             // Create claims
             var claims = new List<Claim>
             {
+                new Claim("UserId", user.Id.ToString()),
+
                 new Claim(ClaimTypes.Name, user.Username ?? string.Empty),
                 new Claim(ClaimTypes.Role, user.Role.ToString())
             };
@@ -65,7 +68,7 @@ namespace ExtensionDKM.Controllers
 
             return RedirectToAction("Index", "Home");
         }
-
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(
