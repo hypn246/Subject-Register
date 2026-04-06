@@ -68,7 +68,10 @@ namespace ExtensionDKM.Models
         public int Id { get; set; }
 
         [Required]
-        public string? Name { get; set; } 
+        public string? Name { get; set; }
+        //
+        public int? MajorId { get; set; }
+        public Major? Major { get; set; }
         public int Credit { get; set; }
         public int Tuition { get; set; }
 
@@ -103,7 +106,7 @@ namespace ExtensionDKM.Models
         public int Semester { get; set; }
         public int SS { get; set; }
         public int LecturerId { get; set; }
-        public Lecturer? Lecturer { get; set; }
+        public User? Lecturer { get; set; }
 
         // Teaches 1 Course
         public int CourseId { get; set; }
@@ -149,5 +152,6 @@ namespace ExtensionDKM.Models
         public string? Name { get; set; }
 
         public List<User> Users { get; set; } = new();
+        public List<Course> Courses { get; set; } =new();
     }
 }

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ExtensionDKM.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Lecturer")]
     public class UsersController : Controller
     {
         private readonly MyDBContext _context;

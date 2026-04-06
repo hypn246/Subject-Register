@@ -3,6 +3,7 @@ using ExtensionDKM.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExtensionDKM.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    partial class MyDBContextModelSnapshot : ModelSnapshot
+    [Migration("20260403232336_Update relationship")]
+    partial class Updaterelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -282,6 +285,16 @@ namespace ExtensionDKM.Migrations
                     b.UseTphMappingStrategy();
                 });
 
+            modelBuilder.Entity("ExtensionDKM.Models.Lecturer", b =>
+                {
+                    b.HasBaseType("ExtensionDKM.Models.User");
+
+                    b.Property<string>("Level")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasDiscriminator().HasValue("Lecturer");
+                });
+
             modelBuilder.Entity("ExtensionDKM.Models.Student", b =>
                 {
                     b.HasBaseType("ExtensionDKM.Models.User");
@@ -352,8 +365,8 @@ namespace ExtensionDKM.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ExtensionDKM.Models.User", "Lecturer")
-                        .WithMany()
+                    b.HasOne("ExtensionDKM.Models.Lecturer", "Lecturer")
+                        .WithMany("Classrooms")
                         .HasForeignKey("LecturerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -446,6 +459,11 @@ namespace ExtensionDKM.Migrations
             modelBuilder.Entity("ExtensionDKM.Models.ScoreTable", b =>
                 {
                     b.Navigation("Scores");
+                });
+
+            modelBuilder.Entity("ExtensionDKM.Models.Lecturer", b =>
+                {
+                    b.Navigation("Classrooms");
                 });
 
             modelBuilder.Entity("ExtensionDKM.Models.Student", b =>

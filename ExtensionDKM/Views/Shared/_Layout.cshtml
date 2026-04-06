@@ -28,24 +28,27 @@
                                 @if (User.IsInRole("Admin"))
                                 {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="">Users</a>
-                                </li>
-                                <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Majors" asp-action="">Majors</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Courses" asp-action="">Course</a>
                                 </li>
                                 <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Rooms" asp-action="">Rooms</a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Classrooms" asp-action="">Classrooms</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Rooms" asp-action="">Rooms</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="">Users</a>
                                 </li>
                             }else if (User.IsInRole("Lecturer"))
                                 {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Classrooms" asp-action="">Open A Class</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="">Users</a>
                                 </li>
                                 }
                                 else
@@ -67,7 +70,7 @@
                                     else
                                     {
                                         <li class="nav-item">
-                                            <p class="nav-link text-dark" asp-area="">Hi! @ViewData["Fullname"]</p>
+                                            <p class="nav-link text-dark" asp-area="">Hi! @User.Identity.Name</p>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="Logout">Logout</a>
