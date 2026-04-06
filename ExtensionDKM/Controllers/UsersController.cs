@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ExtensionDKM.Data;
+using ExtensionDKM.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ExtensionDKM.Data;
-using ExtensionDKM.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ExtensionDKM.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class UsersController : Controller
     {
         private readonly MyDBContext _context;
@@ -19,7 +21,7 @@ namespace ExtensionDKM.Controllers
             _context = context;
         }
 
-        // GET: Users
+        // GET: Users - modified
         public async Task<IActionResult> Index()
         {
             return View(await _context.Users.ToListAsync());
@@ -46,28 +48,36 @@ namespace ExtensionDKM.Controllers
         // GET: Users/Create
         public IActionResult Create()
         {
+            ViewBag.Majors = new SelectList(_context.Majors, "Id", "Name");
             return View();
         }
 
-        // POST: Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Users/Create - modified
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Username,Password")] User user)
+        public async Task<IActionResult> Create(String Role,[Bind("Name,Username,Password,MajorId")] User user)
         {
+            if (Role == "Admin")
+                user.Role=UserRole.Admin;
+            else if (Role == "Lecturer")
+                user.Role = UserRole.Lecturer;
+            else
+                user.Role = UserRole.Student;
+            //
             if (ModelState.IsValid)
             {
-                _context.Add(user);
+                _context.Users.Add(user);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index");
             }
+
             return View(user);
         }
 
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            ViewBag.Majors = new SelectList(_context.Majors, "Id", "Name");
             if (id == null)
             {
                 return NotFound();
@@ -81,12 +91,10 @@ namespace ExtensionDKM.Controllers
             return View(user);
         }
 
-        // POST: Users/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Users/Edit/5  - modified
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Username,Password")] User user)
+        public async Task<IActionResult> Edit(int id, string Role, [Bind("Id,Name,Username,Password,MajorId")] User user)
         {
             if (id != user.Id)
             {
@@ -97,6 +105,12 @@ namespace ExtensionDKM.Controllers
             {
                 try
                 {
+                    if (Role == "Admin")
+                        user.Role = UserRole.Admin;
+                    else if (Role == "Lecturer")
+                        user.Role = UserRole.Lecturer;
+                    else
+                        user.Role = UserRole.Student;
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }
@@ -113,6 +127,7 @@ namespace ExtensionDKM.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            
             return View(user);
         }
 
