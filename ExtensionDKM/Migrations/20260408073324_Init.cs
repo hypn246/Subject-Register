@@ -11,21 +11,6 @@ namespace ExtensionDKM.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Courses",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Credit = table.Column<int>(type: "int", nullable: false),
-                    Tuition = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Courses", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Majors",
                 columns: table => new
                 {
@@ -50,6 +35,52 @@ namespace ExtensionDKM.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Room", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Courses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MajorId = table.Column<int>(type: "int", nullable: true),
+                    Credit = table.Column<int>(type: "int", nullable: false),
+                    Tuition = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Courses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Courses_Majors_MajorId",
+                        column: x => x.MajorId,
+                        principalTable: "Majors",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Role = table.Column<int>(type: "int", nullable: false),
+                    MajorId = table.Column<int>(type: "int", nullable: true),
+                    Discriminator = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
+                    K = table.Column<int>(type: "int", nullable: true),
+                    ScoreTableId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Majors_MajorId",
+                        column: x => x.MajorId,
+                        principalTable: "Majors",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -95,32 +126,6 @@ namespace ExtensionDKM.Migrations
                         name: "FK_CourseRequirement_Courses_RequirementCoursesId",
                         column: x => x.RequirementCoursesId,
                         principalTable: "Courses",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Role = table.Column<int>(type: "int", nullable: false),
-                    MajorId = table.Column<int>(type: "int", nullable: true),
-                    Discriminator = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
-                    Level = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    K = table.Column<int>(type: "int", nullable: true),
-                    ScoreTableId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Users_Majors_MajorId",
-                        column: x => x.MajorId,
-                        principalTable: "Majors",
                         principalColumn: "Id");
                 });
 
@@ -234,6 +239,11 @@ namespace ExtensionDKM.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "Discriminator", "MajorId", "Name", "Password", "Role", "Username" },
+                values: new object[] { 1, "User", null, "Admin", "123", 0, "admin" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Assigns_CourseId",
                 table: "Assigns",
@@ -268,6 +278,11 @@ namespace ExtensionDKM.Migrations
                 name: "IX_CourseRequirement_RequirementCoursesId",
                 table: "CourseRequirement",
                 column: "RequirementCoursesId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Courses_MajorId",
+                table: "Courses",
+                column: "MajorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Scores_AssignId",

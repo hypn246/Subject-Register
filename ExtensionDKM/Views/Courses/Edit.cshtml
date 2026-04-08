@@ -4,6 +4,7 @@
     ViewData["Title"] = "Edit";
 }
 
+
 <h1>Edit</h1>
 
 <h4>Course</h4>
@@ -19,6 +20,13 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="MajorId" class="control-label"></label>
+                <select asp-for="MajorId" asp-items="ViewBag.Majors">
+                    <option value="">-- Select Major --</option>
+                </select>
+                <span asp-validation-for="MajorId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Credit" class="control-label"></label>
                 <input asp-for="Credit" class="form-control" />
                 <span asp-validation-for="Credit" class="text-danger"></span>
@@ -27,6 +35,81 @@
                 <label asp-for="Tuition" class="control-label"></label>
                 <input asp-for="Tuition" class="form-control" />
                 <span asp-validation-for="Tuition" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Previous Courses</label>
+
+                <div class="row">
+                    <!-- Available -->
+                    <div class="col-md-5">
+                        <select id="availableCourses" class="form-control" multiple size="10">
+                            @foreach (var item in ViewBag.PreviousCourses)
+                            {
+                                if (!item.Selected)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="col-md-2 text-center d-flex flex-column justify-content-center">
+                        <button type="button" id="addBtn" class="btn btn-primary mb-2">>></button>
+                        <button type="button" id="removeBtn" class="btn btn-secondary"><<</button>
+                    </div>
+
+                    <!-- Selected -->
+                    <div class="col-md-5">
+                        <select id="selectedCourses" name="PreviousCourseIds" class="form-control" multiple size="10">
+                            @foreach (var item in ViewBag.PreviousCourses)
+                            {
+                                if (item.Selected)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Requirement Courses</label>
+
+                <div class="row">
+                    <!-- Available -->
+                    <div class="col-md-5">
+                        <select id="availableRequirementCourses" class="form-control" multiple size="10">
+                            @foreach (var item in ViewBag.RequirementCourses)
+                            {
+                                if (!item.Selected)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="col-md-2 text-center d-flex flex-column justify-content-center">
+                        <button type="button" id="addReqBtn" class="btn btn-primary mb-2">>></button>
+                        <button type="button" id="removeReqBtn" class="btn btn-secondary"><<</button>
+                    </div>
+
+                    <!-- Selected -->
+                    <div class="col-md-5">
+                        <select id="selectedRequirementCourses" name="RequirementCourseIds" class="form-control" multiple size="10">
+                            @foreach (var item in ViewBag.RequirementCourses)
+                            {
+                                if (item.Selected)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
@@ -40,5 +123,35 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function setupDualList(availableId, selectedId, addBtnId, removeBtnId) {
+            const available = document.getElementById(availableId);
+            const selected = document.getElementById(selectedId);
+
+            document.getElementById(addBtnId).onclick = () => move(available, selected);
+            document.getElementById(removeBtnId).onclick = () => move(selected, available);
+        }
+
+        function move(from, to) {
+            Array.from(from.selectedOptions).forEach(option => {
+                to.appendChild(option);
+            });
+        }
+
+        // Setup BOTH lists
+        setupDualList("availableCourses", "selectedCourses", "addBtn", "removeBtn");
+        setupDualList("availableRequirementCourses", "selectedRequirementCourses", "addReqBtn", "removeReqBtn");
+
+        // Submit handler
+        document.querySelector("form").addEventListener("submit", function() {
+
+            // Previous
+            Array.from(document.getElementById("selectedCourses").options)
+                .forEach(o => o.selected = true);
+
+            // Requirement
+            Array.from(document.getElementById("selectedRequirementCourses").options)
+                .forEach(o => o.selected = true);
+        });
+    </script>
 }

@@ -48,11 +48,14 @@ namespace ExtensionDKM.Controllers
         }
 
         // GET: Classrooms/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var lecturers = await _context.Users.Where(u => u.Role == UserRole.Lecturer)
+                .ToListAsync();
+            ViewData["LecturerId"] = new SelectList(lecturers, "Id", "Name");
+
             ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Name");
-            ViewData["LecturerId"] = new SelectList(_context.Set<Lecturer>(), "Id", "Discriminator");
-            ViewData["RoomId"] = new SelectList(_context.Room, "Id", "Id");
+            ViewData["RoomId"] = new SelectList(_context.Room, "Id", "Name");
             return View();
         }
 
@@ -61,17 +64,35 @@ namespace ExtensionDKM.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Time,RoomId,SchoolYear,Semester,SS,LecturerId,CourseId")] Classroom classroom)
+        public async Task<IActionResult> Create(string Semester, [Bind("Id,Time,RoomId,SchoolYear,SS,LecturerId,CourseId")] Classroom classroom)
         {
+            var existing = await _context.Classrooms.Where(c => c.LecturerId == classroom.LecturerId)
+                .ToListAsync();
+
+            var conflict = await _context.Classrooms.FirstOrDefaultAsync(c =>
+                c.LecturerId == classroom.LecturerId &&
+                c.SchoolYear == classroom.SchoolYear &&
+                c.Semester == classroom.Semester &&
+                c.Time == classroom.Time
+            );
+            if (conflict != null) { 
+                if (conflict.CourseId == classroom.CourseId)
+                    {
+                        ModelState.AddModelError("", "You already have teach this course at this time.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "You already has another course at this time");
+                    }
+            }
+
             if (ModelState.IsValid)
             {
+                classroom.Semester = int.Parse(Semester);
                 _context.Add(classroom);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Name", classroom.CourseId);
-            ViewData["LecturerId"] = new SelectList(_context.Set<Lecturer>(), "Id", "Discriminator", classroom.LecturerId);
-            ViewData["RoomId"] = new SelectList(_context.Room, "Id", "Id", classroom.RoomId);
             return View(classroom);
         }
 
@@ -89,7 +110,7 @@ namespace ExtensionDKM.Controllers
                 return NotFound();
             }
             ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Name", classroom.CourseId);
-            ViewData["LecturerId"] = new SelectList(_context.Set<Lecturer>(), "Id", "Discriminator", classroom.LecturerId);
+            ViewData["LecturerId"] = new SelectList(_context.Users, "Id", "Name", classroom.LecturerId);
             ViewData["RoomId"] = new SelectList(_context.Room, "Id", "Id", classroom.RoomId);
             return View(classroom);
         }
@@ -104,6 +125,31 @@ namespace ExtensionDKM.Controllers
             if (id != classroom.Id)
             {
                 return NotFound();
+            }
+            // //LINQ
+            //var conflict = await (from classrooms in  _context.Classrooms
+            //                      where (classrooms.LecturerId == classroom.Id 
+            //                      && classrooms.SchoolYear == classroom.SchoolYear
+            //                      && classrooms.Semester == classroom.Semester
+            //                      && classrooms.Time == classroom.Time)
+            //                      select classrooms).FirstOrDefaultAsync();
+            //LINQ method
+            var conflict = await _context.Classrooms.FirstOrDefaultAsync(c =>
+                c.LecturerId == classroom.LecturerId &&
+                c.SchoolYear == classroom.SchoolYear &&
+                c.Semester == classroom.Semester &&
+                c.Time == classroom.Time
+            );
+            if (conflict != null)
+            {
+                if (conflict.CourseId == classroom.CourseId)
+                {
+                    ModelState.AddModelError("", "You already have teach this course at this time.");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "You already has another course at this time");
+                }
             }
 
             if (ModelState.IsValid)
@@ -126,9 +172,6 @@ namespace ExtensionDKM.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Name", classroom.CourseId);
-            ViewData["LecturerId"] = new SelectList(_context.Set<Lecturer>(), "Id", "Discriminator", classroom.LecturerId);
-            ViewData["RoomId"] = new SelectList(_context.Room, "Id", "Id", classroom.RoomId);
             return View(classroom);
         }
 

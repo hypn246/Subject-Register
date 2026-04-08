@@ -128,6 +128,9 @@ namespace ExtensionDKM.Migrations
                     b.Property<int>("Credit")
                         .HasColumnType("int");
 
+                    b.Property<int?>("MajorId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -136,6 +139,8 @@ namespace ExtensionDKM.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MajorId");
 
                     b.ToTable("Courses");
                 });
@@ -275,16 +280,16 @@ namespace ExtensionDKM.Migrations
                     b.HasDiscriminator<string>("Discriminator").HasValue("User");
 
                     b.UseTphMappingStrategy();
-                });
 
-            modelBuilder.Entity("ExtensionDKM.Models.Lecturer", b =>
-                {
-                    b.HasBaseType("ExtensionDKM.Models.User");
-
-                    b.Property<string>("Level")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasDiscriminator().HasValue("Lecturer");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Admin",
+                            Password = "123",
+                            Role = 0,
+                            Username = "admin"
+                        });
                 });
 
             modelBuilder.Entity("ExtensionDKM.Models.Student", b =>
@@ -357,8 +362,8 @@ namespace ExtensionDKM.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ExtensionDKM.Models.Lecturer", "Lecturer")
-                        .WithMany("Classrooms")
+                    b.HasOne("ExtensionDKM.Models.User", "Lecturer")
+                        .WithMany()
                         .HasForeignKey("LecturerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -374,6 +379,15 @@ namespace ExtensionDKM.Migrations
                     b.Navigation("Lecturer");
 
                     b.Navigation("Room");
+                });
+
+            modelBuilder.Entity("ExtensionDKM.Models.Course", b =>
+                {
+                    b.HasOne("ExtensionDKM.Models.Major", "Major")
+                        .WithMany("Courses")
+                        .HasForeignKey("MajorId");
+
+                    b.Navigation("Major");
                 });
 
             modelBuilder.Entity("ExtensionDKM.Models.Score", b =>
@@ -429,6 +443,8 @@ namespace ExtensionDKM.Migrations
 
             modelBuilder.Entity("ExtensionDKM.Models.Major", b =>
                 {
+                    b.Navigation("Courses");
+
                     b.Navigation("Users");
                 });
 
@@ -440,11 +456,6 @@ namespace ExtensionDKM.Migrations
             modelBuilder.Entity("ExtensionDKM.Models.ScoreTable", b =>
                 {
                     b.Navigation("Scores");
-                });
-
-            modelBuilder.Entity("ExtensionDKM.Models.Lecturer", b =>
-                {
-                    b.Navigation("Classrooms");
                 });
 
             modelBuilder.Entity("ExtensionDKM.Models.Student", b =>

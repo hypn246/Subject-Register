@@ -1,60 +1,153 @@
-﻿@model ExtensionDKM.Models.User
+﻿@* 1. KHAI BÁO MODEL *@
+@model ExtensionDKM.Models.User
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create User";
 }
 
-<h1>Create</h1>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            @* Dùng col-8 để form có không gian rộng rãi, dễ chia 2 cột *@
 
-<h4>User</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" name="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+            <div class="card shadow-sm border-0">
+                @* HEADER: Tiêu đề trang dùng bg-primary (Xanh dương) *@
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i>Create New User</h5>
+                </div>
+
+                <div class="card-body p-4">
+                    @* FORM: Giữ nguyên action và method POST *@
+                    <form asp-action="Create" method="post">
+
+                        @* TỔNG HỢP LỖI *@
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        @* --- HÀNG 1: NAME & USERNAME --- *@
+                        <div class="row mb-3">
+                            @* Tên người dùng *@
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label asp-for="Name" class="form-label fw-bold">Full Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                                    @* asp-for đã tự động tạo thuộc tính name="", nên ta không cần gõ tay name="Name" nữa *@
+                                    <input asp-for="Name" class="form-control" placeholder="e.g. Nguyen Van A" />
+                                </div>
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+
+                            @* Tên đăng nhập *@
+                            <div class="col-md-6">
+                                <label asp-for="Username" class="form-label fw-bold">Username</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-person-badge"></i></span>
+                                    <input asp-for="Username" class="form-control" placeholder="Enter username..." />
+                                </div>
+                                <span asp-validation-for="Username" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        @* --- HÀNG 2: PASSWORD & ROLE --- *@
+                        <div class="row mb-3">
+                            @* Mật khẩu *@
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label asp-for="Password" class="form-label fw-bold">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
+                                    <input asp-for="Password" type="password" class="form-control" placeholder="Enter password..." />
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                            </div>
+
+                            @* Vai trò (Role) *@
+                            <div class="col-md-6">
+                                <label asp-for="Role" class="form-label fw-bold">Role</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-shield-check"></i></span>
+                                    @* Đổi class thành form-select cho chuẩn Dropdown của Bootstrap 5 *@
+                                    <select asp-for="Role" asp-items="ViewBag.Roles" class="form-select">
+                                        <option value="" disabled selected>-- Select Role --</option>
+                                        <option value="Student">Student</option>
+                                        <option value="Lecturer">Lecturer</option>
+                                        <option value="Admin">Admin</option>
+                                    </select>
+                                </div>
+                                <span asp-validation-for="Role" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        @* --- HÀNG 3: CHUYÊN NGÀNH (MAJOR) --- *@
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="MajorId" class="form-label fw-bold">Major</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-mortarboard"></i></span>
+                                    @* Thêm class form-select vào đây để làm đẹp giao diện dropdown *@
+                                    <select asp-for="MajorId" asp-items="ViewBag.Majors" class="form-select">
+                                        <option value="" disabled selected>-- Select Major --</option>
+                                    </select>
+                                </div>
+                                <span asp-validation-for="MajorId" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4 text-muted" />
+
+                        @* --- NÚT BẤM THAO TÁC --- *@
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a asp-action="Index" class="btn btn-link text-decoration-none text-secondary p-0">
+                                <i class="bi bi-arrow-left"></i> Back to List
+                            </a>
+                            <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                                <i class="bi bi-check-lg me-1"></i> Create User
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Username" class="control-label"></label>
-                <input asp-for="Username" name="Username" class="form-control" />
-                <span asp-validation-for="Username" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password"name="Password" type="password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Role"></label>
-                <select asp-for="Role" asp-items="ViewBag.Roles" class="form-control">
-                    <option value="" disabled selected>-- Select Role --</option>
-                    <option value="Student">Student</option>
-                    <option value="Lecturer">Lecturer</option>
-                    <option value="Admin">Admin</option>
-                </select>
-                <span asp-validation-for="Role" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MajorId" class="control-label"></label>
-                <select asp-for="MajorId" asp-items="ViewBag.Majors">
-                    <option value="" disabled selected>-- Select Major --</option>
-                </select>
-                <span asp-validation-for="MajorId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <style>
+        /* CSS đồng bộ: Bo góc, hiệu ứng Focus */
+        .card {
+            border-radius: 12px;
+        }
+
+        .card-header {
+            border-radius: 12px 12px 0 0 !important;
+        }
+
+        .form-control, .form-select {
+            border-radius: 0 8px 8px 0 !important;
+            padding: 0.7rem;
+        }
+
+        .input-group-text {
+            border-radius: 8px 0 0 8px;
+            border-right: none;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        .btn-primary {
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .form-label {
+            font-size: 0.9rem;
+            color: #444;
+        }
+    </style>
 }
