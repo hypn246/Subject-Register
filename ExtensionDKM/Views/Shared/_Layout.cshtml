@@ -10,31 +10,29 @@
     <link rel="stylesheet" href="~/ExtensionDKM.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-    @* CSS THÊM VÀO ĐỂ LÀM NỔI BẬT MENU *@
     <style>
         .navbar-nav .nav-item {
-            margin: 0 3px; /* Tạo khoảng cách đều giữa các nút */
+            margin: 0 1rem; 
         }
-
-        /* Trạng thái bình thường của thẻ a */
         .nav-link {
             border-radius: 8px;
             transition: all 0.2s ease-in-out;
-            padding: 0.5rem 1rem !important;
         }
 
-            /* Trạng thái khi Hover chuột */
-            .nav-link:hover {
-                background-color: #f8f9fa;
-                color: #0d6efd !important;
-            }
+        .nav-link:hover {
+            color: #0d6efd !important ;
+        }
 
-        /* Trạng thái khi đang ở đúng trang đó (Active) */
         .active-nav-item {
             font-weight: 700 !important;
             color: #ffffff !important;
-            background-color: #0d6efd !important; /* Màu xanh Primary */
-            box-shadow: 0 2px 4px rgba(13, 110, 253, 0.3); /* Đổ bóng nhẹ */
+            background-color: #0d6efd !important; 
+            box-shadow: 0 2px 4px rgba(13, 110, 253, 0.3); 
+        }
+
+        .active-nav-item:hover {
+            color: black !important;
+            opacity:0.8;
         }
     </style>
 </head>
@@ -93,7 +91,7 @@
                                 else
                                 {
                                     <li class="nav-item">
-                                        <a class="nav-link @(currentController == "Courses" ? "active-nav-item" : "text-dark")" asp-area="" asp-controller="Courses" asp-action="Index">Assign Course</a>
+                                        <a class="nav-link @(currentController == "Enroll" ? "active-nav-item" : "text-dark")" asp-area="" asp-controller="Enroll" asp-action="Index">Assign Course</a>
                                     </li>
                                 }
                             }
