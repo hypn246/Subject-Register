@@ -1,33 +1,98 @@
-﻿@model ExtensionDKM.Models.Major
+﻿@* 1. KHAI BÁO MODEL: Dùng đúng đường dẫn Model bạn gửi *@
+@model ExtensionDKM.Models.Major
 
 @{
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            @* Thu nhỏ khung lại cho cân đối vì chỉ có 1 trường dữ liệu *@
 
-<h4>Major</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+            <div class="card shadow-sm border-0">
+                @* HEADER: Tiêu đề khung *@
+                <div class="card-header bg-dark text-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-tag me-2"></i>Create Major</h5>
+                </div>
+
+                <div class="card-body p-4">
+                    @* FORM: Giữ nguyên asp-action="Create" của bạn *@
+                    <form asp-action="Create">
+
+                        @* TỔNG HỢP LỖI: Hiển thị lỗi tổng quát từ Server *@
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        @* PHẦN NHẬP TÊN (NAME): Thành phần quan trọng nhất *@
+                        <div class="form-group mb-4">
+                            @* Chú thích: Label liên kết với thuộc tính Name *@
+                            <label asp-for="Name" class="form-label fw-bold">Major Name</label>
+
+                            <div class="input-group">
+                                @* Thêm Icon cho thân thiện *@
+                                <span class="input-group-text bg-light text-muted">
+                                    <i class="bi bi-pencil-square"></i>
+                                </span>
+
+                                @* Chú thích: Ô nhập liệu chính xác cho Name *@
+                                <input asp-for="Name" class="form-control" placeholder="Enter major name..." />
+                            </div>
+
+                            @* Chú thích: Dòng báo lỗi đỏ dưới ô nhập liệu nếu để trống *@
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <hr class="my-4 text-muted" />
+
+                        @* NÚT THAO TÁC *@
+                        <div class="d-flex justify-content-between align-items-center">
+                            @* Nút quay lại *@
+                            <a asp-action="Index" class="btn btn-link text-decoration-none text-secondary p-0">
+                                <i class="bi bi-arrow-left"></i> Back to List
+                            </a>
+
+                            @* Nút gửi Form (Submit) *@
+                            <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                                <i class="bi bi-plus-lg me-1"></i> Create Now
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @* SCRIPT QUAN TRỌNG: Kiểm tra lỗi Name trực tiếp trên trình duyệt *@
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <style>
+        /* CSS bổ trợ để giao diện sạch sẽ hơn */
+        .card {
+            border-radius: 12px;
+        }
+
+        .card-header {
+            border-radius: 12px 12px 0 0 !important;
+        }
+
+        .form-control {
+            border-radius: 0 8px 8px 0 !important;
+            padding: 0.7rem;
+        }
+
+        .input-group-text {
+            border-radius: 8px 0 0 8px;
+            border-right: none;
+        }
+
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+        }
+    </style>
 }

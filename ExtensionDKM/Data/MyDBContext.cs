@@ -18,7 +18,7 @@ namespace ExtensionDKM.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Seedin
+             //Seedin
             //base.OnModelCreating(modelBuilder);
             //modelBuilder.Entity<User>().HasData(
             //     new User
@@ -26,11 +26,11 @@ namespace ExtensionDKM.Data
             //         Id = 1,
             //         Name = "Admin",
             //         Username = "admin",
-            //         Password = "123",
-            //         Role = UserRole.Admin
-            //     });
+            //        Password = "123",
+            //        Role = UserRole.Admin
+            //    });
 
-            // Course self-ref Many-to-Many relationships
+            //Course self-ref Many-to-Many relationships
             modelBuilder.Entity<Course>() 
                 .HasMany(c => c.PreviousCourses)
                 .WithMany(c => c.NextCourses)

@@ -1,65 +1,128 @@
 ﻿@model ExtensionDKM.Models.Course
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Course";
 }
 
-<h1>Create</h1>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-journal-plus me-2"></i>Create New Course</h5>
+                </div>
 
-<h4>Course</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MajorId" class="control-label"></label>
-                <select asp-for="MajorId" asp-items="ViewBag.Majors">
-                    <option value="" disabled selected>-- Select Major --</option>
-                </select>
-                <span asp-validation-for="MajorId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Credit" class="control-label"></label>
-                <input asp-for="Credit" class="form-control" />
-                <span asp-validation-for="Credit" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Tuition" class="control-label"></label>
-                <input asp-for="Tuition" class="form-control" />
-                <span asp-validation-for="Tuition" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label for="PreviousCourseIds" class="control-label"></label>
-                <select name="PreviousCourseIds" asp-items="ViewBag.Courses" multiple>
-                    <option value="" selected>-- Select Previous Courses --</option>
-                </select>
-                <span for="PreviousCourseIds" class="text-danger"></span>
-            </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <div class="form-group">
-                <label for="RequirementCourseIds" class="control-label"></label>
-                <select name="RequirementCourseIds" asp-items="ViewBag.Courses" multiple>
-                    <option value="" selected>-- Select Requirement Courses --</option>
-                </select>
-                <span for="RequirementCourseIds" class="text-danger"></span>
+                        <div class="row">
+                            <div class="col-md-7 mb-3">
+                                <label asp-for="Name" class="form-label fw-bold"></label>
+                                <input asp-for="Name" class="form-control" placeholder="Enter course name..." />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-5 mb-3">
+                                <label asp-for="MajorId" class="form-label fw-bold"></label>
+                                <select asp-for="MajorId" asp-items="ViewBag.Majors" class="form-select">
+                                    <option value="" disabled selected>-- Select Major --</option>
+                                </select>
+                                <span asp-validation-for="MajorId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Credit" class="form-label fw-bold"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                                    <input asp-for="Credit" class="form-control" placeholder="0" />
+                                </div>
+                                <span asp-validation-for="Credit" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Tuition" class="form-label fw-bold"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="Tuition" class="form-control" placeholder="0.00" />
+                                </div>
+                                <span asp-validation-for="Tuition" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4 text-muted" />
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="PreviousCourseIds" class="form-label fw-bold text-primary">Previous Courses</label>
+                                <select name="PreviousCourseIds" asp-items="ViewBag.Courses" class="form-select shadow-none" multiple style="height: 160px;">
+                                    <option value="" disabled>-- Select Previous Courses --</option>
+                                </select>
+                                <div class="form-text mt-2"><i class="bi bi-info-circle"></i> Hold <b>Ctrl</b> to select multiple items</div>
+                                <span for="PreviousCourseIds" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="RequirementCourseIds" class="form-label fw-bold text-primary">Requirement Courses</label>
+                                <select name="RequirementCourseIds" asp-items="ViewBag.Courses" class="form-select shadow-none" multiple style="height: 160px;">
+                                    <option value="" disabled>-- Select Requirement Courses --</option>
+                                </select>
+                                <div class="form-text mt-2"><i class="bi bi-info-circle"></i> Hold <b>Ctrl</b> to select multiple items</div>
+                                <span for="RequirementCourseIds" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                            <a asp-action="Index" class="btn btn-link text-decoration-none text-secondary p-0">
+                                <i class="bi bi-chevron-left"></i> Back to List
+                            </a>
+                            <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                                <i class="bi bi-plus-lg me-1"></i> Create Course
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <style>
+        /* Tinh chỉnh giao diện */
+        .card {
+            border-radius: 15px;
+        }
+
+        .card-header {
+            border-radius: 15px 15px 0 0 !important;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid #dee2e6;
+            padding: 0.6rem 0.75rem;
+            transition: all 0.2s;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #0d6efd;
+                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+            }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+            color: #6c757d;
+        }
+
+        label {
+            font-size: 0.9rem;
+            color: #495057;
+        }
+    </style>
 }

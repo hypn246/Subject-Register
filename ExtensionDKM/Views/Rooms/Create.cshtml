@@ -1,38 +1,116 @@
-﻿@model ExtensionDKM.Models.Room
+﻿@* 1. KHAI BÁO MODEL: Đảm bảo chỉ có 1 dấu @ ở đầu file *@
+@model ExtensionDKM.Models.Room
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Room";
 }
 
-<h1>Create</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            @* Khung kích thước vừa phải cho 2 trường dữ liệu *@
 
-<h4>Room</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+            <div class="card shadow-sm border-0">
+                @* HEADER: Tiêu đề trang với màu Xanh lơ (bg-info) *@
+                <div class="card-header bg-info text-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-door-open-fill me-2"></i>Create New Room</h5>
+                </div>
+
+                <div class="card-body p-4">
+                    @* FORM: Gửi dữ liệu về Server *@
+                    <form asp-action="Create">
+
+                        @* TỔNG HỢP LỖI *@
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        @* Chia 2 ô Name và Capacity nằm trên cùng một hàng (row) *@
+                        <div class="row">
+
+                            @* --- Ô NHẬP TÊN PHÒNG (NAME) --- *@
+                            <div class="col-md-7 mb-3">
+                                <label asp-for="Name" class="form-label fw-bold">Room Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-geo-alt"></i></span>
+                                    @* asp-for="Name" liên kết với Model *@
+                                    <input asp-for="Name" class="form-control" placeholder="e.g. Room 101, Lab A..." />
+                                </div>
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+
+                            @* --- Ô NHẬP SỨC CHỨA (CAPACITY) --- *@
+                            <div class="col-md-5 mb-3">
+                                <label asp-for="Capacity" class="form-label fw-bold">Capacity</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-people"></i></span>
+                                    @* asp-for="Capacity" liên kết với Model. Ép kiểu nhập số (type="number") *@
+                                    <input asp-for="Capacity" type="number" class="form-control" placeholder="e.g. 40" />
+                                </div>
+                                <span asp-validation-for="Capacity" class="text-danger small"></span>
+                            </div>
+
+                        </div>
+
+                        <hr class="my-4 text-muted" />
+
+                        @* --- NÚT BẤM THAO TÁC --- *@
+                        <div class="d-flex justify-content-between align-items-center">
+                            @* Nút quay lại *@
+                            <a asp-action="Index" class="btn btn-link text-decoration-none text-secondary p-0">
+                                <i class="bi bi-arrow-left"></i> Back to List
+                            </a>
+
+                            @* Nút Submit *@
+                            <button type="submit" class="btn btn-info text-white px-4 shadow-sm">
+                                <i class="bi bi-plus-lg me-1"></i> Create Room
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Capacity" class="control-label"></label>
-                <input asp-for="Capacity" class="form-control" />
-                <span asp-validation-for="Capacity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @* Giữ lại Script kiểm tra lỗi *@
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <style>
+        /* CSS làm đẹp, bo góc và hiệu ứng click chuột */
+        .card {
+            border-radius: 12px;
+        }
+
+        .card-header {
+            border-radius: 12px 12px 0 0 !important;
+        }
+
+        .form-control {
+            border-radius: 0 8px 8px 0 !important;
+            padding: 0.7rem;
+        }
+
+        .input-group-text {
+            border-radius: 8px 0 0 8px;
+            border-right: none;
+        }
+
+        .form-control:focus {
+            border-color: #0dcaf0;
+            box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.25);
+        }
+
+        .btn-info {
+            font-weight: 600;
+            border-radius: 8px;
+        }
+
+            .btn-info:hover {
+                background-color: #0bacce;
+                color: white;
+            }
+    </style>
 }
