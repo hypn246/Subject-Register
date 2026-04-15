@@ -1,3 +1,5 @@
 .vs/
-ExtensionDKM/bin
-ExtensionDKM/obj
+ExtensionDKM/bin/
+ExtensionDKM/obj/
+bin/
+obj/

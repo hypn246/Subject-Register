@@ -5,9 +5,9 @@ namespace ExtensionDKM.Models
 {
     public enum UserRole
     {
-        Admin,
-        Lecturer,
-        Student
+        Admin=0,
+        Lecturer=1,
+        Student=2,
     }
 
     public class User
