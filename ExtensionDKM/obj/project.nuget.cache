@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "oOv7gWrHPik=",
+  "dgSpecHash": "mquZRhXGc7U=",
   "success": true,
   "projectFilePath": "C:\\Users\\ASUS\\Downloads\\subject\\Subject-Register\\ExtensionDKM\\ExtensionDKM.csproj",
   "expectedPackageFiles": [
@@ -76,14 +76,14 @@
     "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.data.sqlclient.sni.runtime\\6.0.2\\microsoft.data.sqlclient.sni.runtime.6.0.2.nupkg.sha512",
     "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.diasymreader\\2.0.0\\microsoft.diasymreader.2.0.0.nupkg.sha512",
     "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.dotnet.scaffolding.shared\\10.0.2\\microsoft.dotnet.scaffolding.shared.10.0.2.nupkg.sha512",
-    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.entityframeworkcore\\10.0.5\\microsoft.entityframeworkcore.10.0.5.nupkg.sha512",
-    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\10.0.5\\microsoft.entityframeworkcore.abstractions.10.0.5.nupkg.sha512",
-    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\10.0.5\\microsoft.entityframeworkcore.analyzers.10.0.5.nupkg.sha512",
-    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.entityframeworkcore.design\\10.0.5\\microsoft.entityframeworkcore.design.10.0.5.nupkg.sha512",
-    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\10.0.5\\microsoft.entityframeworkcore.relational.10.0.5.nupkg.sha512",
-    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.entityframeworkcore.sqlserver\\10.0.5\\microsoft.entityframeworkcore.sqlserver.10.0.5.nupkg.sha512",
-    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.entityframeworkcore.tools\\10.0.5\\microsoft.entityframeworkcore.tools.10.0.5.nupkg.sha512",
-    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.extensions.dependencymodel\\10.0.5\\microsoft.extensions.dependencymodel.10.0.5.nupkg.sha512",
+    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.entityframeworkcore\\10.0.6\\microsoft.entityframeworkcore.10.0.6.nupkg.sha512",
+    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\10.0.6\\microsoft.entityframeworkcore.abstractions.10.0.6.nupkg.sha512",
+    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\10.0.6\\microsoft.entityframeworkcore.analyzers.10.0.6.nupkg.sha512",
+    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.entityframeworkcore.design\\10.0.2\\microsoft.entityframeworkcore.design.10.0.2.nupkg.sha512",
+    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\10.0.6\\microsoft.entityframeworkcore.relational.10.0.6.nupkg.sha512",
+    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.entityframeworkcore.sqlserver\\10.0.6\\microsoft.entityframeworkcore.sqlserver.10.0.6.nupkg.sha512",
+    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.entityframeworkcore.tools\\10.0.6\\microsoft.entityframeworkcore.tools.10.0.6.nupkg.sha512",
+    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.extensions.dependencymodel\\10.0.2\\microsoft.extensions.dependencymodel.10.0.2.nupkg.sha512",
     "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.identity.client\\4.73.1\\microsoft.identity.client.4.73.1.nupkg.sha512",
     "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.identity.client.extensions.msal\\4.73.1\\microsoft.identity.client.extensions.msal.4.73.1.nupkg.sha512",
     "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.identitymodel.abstractions\\7.7.1\\microsoft.identitymodel.abstractions.7.7.1.nupkg.sha512",
@@ -104,15 +104,15 @@
     "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.visualstudio.web.codegenerators.mvc\\10.0.2\\microsoft.visualstudio.web.codegenerators.mvc.10.0.2.nupkg.sha512",
     "C:\\Users\\ASUS\\.nuget\\packages\\mono.texttemplating\\3.0.0\\mono.texttemplating.3.0.0.nupkg.sha512",
     "C:\\Users\\ASUS\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
-    "C:\\Users\\ASUS\\.nuget\\packages\\nuget.common\\6.12.1\\nuget.common.6.12.1.nupkg.sha512",
-    "C:\\Users\\ASUS\\.nuget\\packages\\nuget.configuration\\6.12.1\\nuget.configuration.6.12.1.nupkg.sha512",
+    "C:\\Users\\ASUS\\.nuget\\packages\\nuget.common\\7.3.1\\nuget.common.7.3.1.nupkg.sha512",
+    "C:\\Users\\ASUS\\.nuget\\packages\\nuget.configuration\\7.3.1\\nuget.configuration.7.3.1.nupkg.sha512",
     "C:\\Users\\ASUS\\.nuget\\packages\\nuget.dependencyresolver.core\\6.12.1\\nuget.dependencyresolver.core.6.12.1.nupkg.sha512",
-    "C:\\Users\\ASUS\\.nuget\\packages\\nuget.frameworks\\6.12.1\\nuget.frameworks.6.12.1.nupkg.sha512",
+    "C:\\Users\\ASUS\\.nuget\\packages\\nuget.frameworks\\7.3.1\\nuget.frameworks.7.3.1.nupkg.sha512",
     "C:\\Users\\ASUS\\.nuget\\packages\\nuget.librarymodel\\6.12.1\\nuget.librarymodel.6.12.1.nupkg.sha512",
-    "C:\\Users\\ASUS\\.nuget\\packages\\nuget.packaging\\6.12.1\\nuget.packaging.6.12.1.nupkg.sha512",
+    "C:\\Users\\ASUS\\.nuget\\packages\\nuget.packaging\\7.3.1\\nuget.packaging.7.3.1.nupkg.sha512",
     "C:\\Users\\ASUS\\.nuget\\packages\\nuget.projectmodel\\6.12.1\\nuget.projectmodel.6.12.1.nupkg.sha512",
-    "C:\\Users\\ASUS\\.nuget\\packages\\nuget.protocol\\6.12.1\\nuget.protocol.6.12.1.nupkg.sha512",
-    "C:\\Users\\ASUS\\.nuget\\packages\\nuget.versioning\\6.12.1\\nuget.versioning.6.12.1.nupkg.sha512",
+    "C:\\Users\\ASUS\\.nuget\\packages\\nuget.protocol\\7.3.1\\nuget.protocol.7.3.1.nupkg.sha512",
+    "C:\\Users\\ASUS\\.nuget\\packages\\nuget.versioning\\7.3.1\\nuget.versioning.7.3.1.nupkg.sha512",
     "C:\\Users\\ASUS\\.nuget\\packages\\system.clientmodel\\1.5.1\\system.clientmodel.1.5.1.nupkg.sha512",
     "C:\\Users\\ASUS\\.nuget\\packages\\system.codedom\\6.0.0\\system.codedom.6.0.0.nupkg.sha512",
     "C:\\Users\\ASUS\\.nuget\\packages\\system.composition\\9.0.0\\system.composition.9.0.0.nupkg.sha512",
@@ -129,30 +129,5 @@
     "C:\\Users\\ASUS\\.nuget\\packages\\system.security.cryptography.pkcs\\9.0.4\\system.security.cryptography.pkcs.9.0.4.nupkg.sha512",
     "C:\\Users\\ASUS\\.nuget\\packages\\system.security.cryptography.protecteddata\\9.0.6\\system.security.cryptography.protecteddata.9.0.6.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1901",
-      "level": "Warning",
-      "message": "Package 'NuGet.Packaging' 6.12.1 has a known low severity vulnerability, https://github.com/advisories/GHSA-g4vj-cjjj-v7hg",
-      "projectPath": "C:\\Users\\ASUS\\Downloads\\subject\\Subject-Register\\ExtensionDKM\\ExtensionDKM.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Users\\ASUS\\Downloads\\subject\\Subject-Register\\ExtensionDKM\\ExtensionDKM.csproj",
-      "libraryId": "NuGet.Packaging",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    },
-    {
-      "code": "NU1901",
-      "level": "Warning",
-      "message": "Package 'NuGet.Protocol' 6.12.1 has a known low severity vulnerability, https://github.com/advisories/GHSA-g4vj-cjjj-v7hg",
-      "projectPath": "C:\\Users\\ASUS\\Downloads\\subject\\Subject-Register\\ExtensionDKM\\ExtensionDKM.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Users\\ASUS\\Downloads\\subject\\Subject-Register\\ExtensionDKM\\ExtensionDKM.csproj",
-      "libraryId": "NuGet.Protocol",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    }
-  ]
+  "logs": []
 }
