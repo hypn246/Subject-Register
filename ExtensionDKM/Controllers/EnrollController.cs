@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ExtensionDKM.Controllers
 {
-        [Authorize(Roles = "Student")]
+
+    [Authorize(Roles = "Student")]
     public class EnrollController:Controller
     {
         private readonly MyDBContext _context;
