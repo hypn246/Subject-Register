@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExtensionDKM.Models
 {
+    // role bug fĩed for jumping role
     public enum UserRole
     {
         Admin=0,
         Lecturer=1,
         Student=2,
     }
-
     public class User
     {
         [Key]
