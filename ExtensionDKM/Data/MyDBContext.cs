@@ -19,16 +19,16 @@ namespace ExtensionDKM.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
              //Seedin
-            base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<User>().HasData(
-                 new User
-                 {
-                     Id = 1,
-                     Name = "Admin",
-                     Username = "admin",
-                    Password = "123",
-                    Role = UserRole.Admin
-                });
+            //base.OnModelCreating(modelBuilder);
+            //modelBuilder.Entity<User>().HasData(
+            //     new User
+            //     {
+            //         Id = 1,
+            //         Name = "Admin",
+            //         Username = "admin",
+            //        Password = "123",
+            //        Role = UserRole.Admin
+            //    });
 
             //Course self-ref Many-to-Many relationships
             modelBuilder.Entity<Course>() 
