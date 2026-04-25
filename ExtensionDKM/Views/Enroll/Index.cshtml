@@ -160,7 +160,7 @@
                             <td class="text-secondary text-center">3</td>
                             <td class="text-secondary">DH23IT02</td>
                             <td class="text-secondary text-center">35</td>
-                            <td class="text-secondary text-center">0</td>
+                            <td class="text-secondary text-center">1</td>
                             <td>
                                 <div class="schedule-scroll-box pe-2">
                                     <div class="schedule-item"></div>
@@ -175,7 +175,7 @@
 
     <div class="registration-card">
         <div class="registration-header">
-            <h5>Danh sách môn học đã đăng ký: <span class="text-danger">3 môn, 9 tín chỉ</span></h5>
+            <h5>Danh sách môn học đã đăng ký: <span id="total-summary" class="text-danger">3 môn, 9 tín chỉ</span></h5> @* them id="total-summary" *@
         </div>
         
         <div class="card-body p-0">
@@ -195,7 +195,7 @@
                             <th>Tách phiếu nộp tiền</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="registered-body"> @* them id="registered-body" *@
                         <tr>
                             <td>
                                 <button type="button" class="btn btn-sm btn-link text-secondary p-0">
@@ -230,5 +230,91 @@
 </div>
 
 <script>
-    //js
+    document.addEventListener('DOMContentLoaded', function () {
+        const registeredBody = document.getElementById('registered-body');
+        const checkboxes = document.querySelectorAll('.form-check-input');
+        
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const row = this.closest('tr');
+                const courseId = this.value;
+                
+                const slotCell = row.cells[8];
+                let currentSlots = parseInt(slotCell.innerText.trim(), 10);
+
+                if (this.checked) {
+                    if (currentSlots <= 0) {
+                        alert("Môn học này đã hết chỗ!");
+                        this.checked = false; 
+                        return; 
+                    }
+
+                    slotCell.innerText = currentSlots - 1;
+
+                    const courseName = row.cells[2].innerText.replace('\n', ' ').trim();
+                    const courseGroup = row.cells[3].innerText.trim();
+                    const credits = row.cells[5].innerText.trim();
+                    const className = row.cells[6].innerText.trim();
+                    
+                    const now = new Date();
+                    const formattedDate = now.toLocaleString('vi-VN');
+
+                    // Dựng btn xoa
+                    const newRowHtml = `
+                        <tr id="reg-row-${courseId}">
+                            <td>
+                                <button type="button" class="btn btn-sm btn-link text-secondary p-0 btn-remove-course" data-id="${courseId}">
+                                        <img src="/css/img/dauX.png" style="width: 20px; height: 20px; object-fit: contain;">
+                                </button>
+                            </td>
+                            <td class="text-secondary">${courseId}</td>
+                            <td class="text-start text-secondary">${courseName}</td>
+                            <td class="text-secondary">${courseGroup}</td>
+                            <td class="text-secondary">${credits}</td>
+                            <td class="text-secondary">${className}</td>
+                            <td class="text-secondary">${formattedDate}</td>
+                            <td></td>
+                            <td>
+                                 <button class="btn btn-sm btn-link text-primary">
+                                    <img src="/css/img/menu.png" style="width: 20px; height: 20px; object-fit: contain;">
+                                 </button>
+                            </td>
+                            <td>
+                                <select class="form-select form-select-sm bg-light text-secondary border-0" style="width: 100px; margin: 0 auto;">
+                                    <option></option>
+                                    <option value="1">Phiếu 1</option>
+                                </select>
+                            </td>
+                        </tr>
+                    `;
+                    
+                    registeredBody.insertAdjacentHTML('beforeend', newRowHtml);
+                    
+                } else {
+                    slotCell.innerText = currentSlots + 1;
+
+                    const rowToRemove = document.getElementById(`reg-row-${courseId}`);
+                    if (rowToRemove) {
+                        rowToRemove.remove();
+                    }
+                }
+            });
+        });
+
+        registeredBody.addEventListener('click', function(e) {
+            const removeBtn = e.target.closest('.btn-remove-course');
+            if (removeBtn) {
+                const courseId = removeBtn.getAttribute('data-id');
+                
+                const checkbox = document.getElementById(`chk_${courseId}`);
+                if (checkbox) {
+                    checkbox.checked = false;
+                    checkbox.dispatchEvent(new Event('change'));
+                } else {
+                    const rowToRemove = document.getElementById(`reg-row-${courseId}`);
+                    if (rowToRemove) rowToRemove.remove();
+                }
+            }
+        });
+    });
 </script>

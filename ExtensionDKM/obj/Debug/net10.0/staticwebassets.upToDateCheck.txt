@@ -1,4 +1,6 @@
 wwwroot\css\img\cat-war.png
+wwwroot\css\img\dauX.png
+wwwroot\css\img\menu.png
 wwwroot\css\site.css
 wwwroot\favicon.ico
 wwwroot\js\site.js
