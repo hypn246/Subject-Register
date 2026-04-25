@@ -27,10 +27,14 @@ namespace ExtensionDKM.Controllers
         {
             var courses = await _context.Courses
                 .Include(c => c.Major)
+
                 .Include(c => c.PreviousCourses)
-                .ThenInclude(pc => pc.Major) 
+                    .ThenInclude(x => x.PreviousCourse)
+
                 .Include(c => c.RequirementCourses)
-                .ThenInclude(rc => rc.Major)
+                    .ThenInclude(x => x.RequirementCourse)
+
+                .AsSplitQuery()
                 .ToListAsync();
 
             return View(courses);
@@ -39,46 +43,24 @@ namespace ExtensionDKM.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
-            ViewBag.Majors = new SelectList(_context.Majors, "Id", "Name");
-
 
             var course = await _context.Courses
-                            .Include(c => c.PreviousCourses)
-                            .Include(c => c.RequirementCourses)
-                            .FirstOrDefaultAsync(c => c.Id == id);
+                .Include(c => c.Major)
+
+                .Include(c => c.PreviousCourses)
+                    .ThenInclude(x => x.PreviousCourse)
+
+                .Include(c => c.RequirementCourses)
+                    .ThenInclude(x => x.RequirementCourse)
+
+                .FirstOrDefaultAsync(c => c.Id == id);
+
             if (course == null)
-            {
                 return NotFound();
-            }
-
-
-            // Selected
-            var allCourses = await _context.Courses.Where(x => x.Id != id)
-                .ToListAsync();
-            ViewBag.Courses = allCourses.Select(c => new SelectListItem
-            {
-                Value = c.Id.ToString(),
-                Text = c.Name
-            }).ToList();
-
-            ViewBag.PreviousCourses = allCourses.Select(c => new SelectListItem
-            {
-                Value = c.Id.ToString(),
-                Text = c.Name,
-                Selected = course.PreviousCourses.Any(pc => pc.Id == c.Id)
-            }).ToList();
-
-            ViewBag.RequirementCourses = allCourses.Select(c => new SelectListItem
-            {
-                Value = c.Id.ToString(),
-                Text = c.Name,
-                Selected = course.RequirementCourses.Any(rc => rc.Id == c.Id)
-            }).ToList();
 
             return View(course);
+
         }
 
         // GET: Courses/Create
@@ -110,34 +92,53 @@ namespace ExtensionDKM.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Credit,Tuition, MajorId")] Course course, 
-            List<int> PreviousCourseIds,List<int> RequirementCourseIds)
+        public async Task<IActionResult> Create([Bind("Id,Name,Credit,Tuition, MajorId")] Course course,
+            List<int> PreviousCourseIds, List<int> RequirementCourseIds)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                if (PreviousCourseIds != null && PreviousCourseIds.Any())
+                return View(course);
+            }
+            try
+            {
+                _context.Courses.Add(course);
+                await _context.SaveChangesAsync();
+
+                // add previous courses
+                if (PreviousCourseIds != null)
                 {
-                    course.PreviousCourses = await _context.Courses
-                        .Where(c => PreviousCourseIds.Contains(c.Id))
-                        .ToListAsync();
+                    foreach (var pid in PreviousCourseIds.Where(x => x != course.Id).Distinct())
+                    {
+                        _context.CoursePrevious.Add(new CoursePrevious
+                        {
+                            CourseId = course.Id,
+                            PreviousCourseId = pid
+                        });
+                    }
                 }
 
-                if (RequirementCourseIds != null && RequirementCourseIds.Any())
+                // add required courses
+                if (RequirementCourseIds != null)
                 {
-                    course.RequirementCourses = await _context.Courses
-                        .Where(c => RequirementCourseIds.Contains(c.Id))
-                        .ToListAsync();
+                    foreach (var rid in RequirementCourseIds.Where(x => x != course.Id).Distinct())
+                    {
+                        _context.CourseRequirement.Add(new CourseRequirement
+                        {
+                            CourseId = course.Id,
+                            RequirementCourseId = rid
+                        });
+                    }
                 }
 
                 _context.Add(course);
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction("Index");
-
             }
-            return View(course);
-        }
+            catch { }
 
+            return RedirectToAction("Index");
+
+        }
         // GET: Courses/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -171,14 +172,14 @@ namespace ExtensionDKM.Controllers
             {
                 Value = c.Id.ToString(),
                 Text = c.Name,
-                Selected = course.PreviousCourses.Any(pc => pc.Id == c.Id)
+                Selected = course.PreviousCourses.Any(pc => pc.PreviousCourseId == c.Id)
             }).ToList();
 
             ViewBag.RequirementCourses = allCourses.Select(c => new SelectListItem
             {
                 Value = c.Id.ToString(),
                 Text = c.Name,
-                Selected = course.RequirementCourses.Any(rc => rc.Id == c.Id)
+                Selected = course.RequirementCourses.Any(rc => rc.RequirementCourseId == c.Id)
             }).ToList();
 
             return View(course);
@@ -211,35 +212,33 @@ namespace ExtensionDKM.Controllers
                     courseReq.Credit = course.Credit;
                     courseReq.Tuition = course.Tuition;
                     courseReq.MajorId = course.MajorId;
-                    if (PreviousCourseIds != null && PreviousCourseIds.Any())
+                    // Remove old relations
+                    _context.CoursePrevious.RemoveRange(courseReq.PreviousCourses);
+                    _context.CourseRequirement.RemoveRange(courseReq.RequirementCourses);
+
+                    // Add Previous Courses
+                    if (PreviousCourseIds != null)
                     {
-                        var previousCourses = await _context.Courses
-                            .Where(c => PreviousCourseIds.Contains(c.Id))
-                            .ToListAsync();
-
-                        //reset rel
-                        PreviousCourseIds = PreviousCourseIds?.Where(x => x != id).ToList();
-                        RequirementCourseIds = RequirementCourseIds?.Where(x => x != id).ToList();
-
-                        // Replace PreviousCourses
-                        courseReq.PreviousCourses = await _context.Courses
-                            .Where(c => PreviousCourseIds.Contains(c.Id))
-                            .ToListAsync();
-
-                        // Replace RequirementCourses
-                        courseReq.RequirementCourses = await _context.Courses
-                            .Where(c => RequirementCourseIds.Contains(c.Id))
-                            .ToListAsync();
-                    }
-                    if (RequirementCourseIds != null && RequirementCourseIds.Any())
-                    {
-                        var requirementCourses = await _context.Courses
-                            .Where(c => RequirementCourseIds.Contains(c.Id))
-                            .ToListAsync();
-
-                        foreach (var rc in requirementCourses)
+                        foreach (var pid in PreviousCourseIds.Where(x => x != id).Distinct())
                         {
-                            courseReq.RequirementCourses.Add(rc);
+                            _context.CoursePrevious.Add(new CoursePrevious
+                            {
+                                CourseId = id,
+                                PreviousCourseId = pid
+                            });
+                        }
+                    }
+
+                    // Add Required Courses
+                    if (RequirementCourseIds != null)
+                    {
+                        foreach (var rid in RequirementCourseIds.Where(x => x != id).Distinct())
+                        {
+                            _context.CourseRequirement.Add(new CourseRequirement
+                            {
+                                CourseId = id,
+                                RequirementCourseId = rid
+                            });
                         }
                     }
 
@@ -284,11 +283,7 @@ namespace ExtensionDKM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            bool isUsed = await _context.Courses.AnyAsync(c =>
-                   c.PreviousCourses.Any(pc => pc.Id == id) ||
-                   c.RequirementCourses.Any(rc => rc.Id == id)
-               );
-
+            bool isUsed = await _context.CoursePrevious.AnyAsync(x => x.PreviousCourseId == id) || await _context.CourseRequirement.AnyAsync(x => x.RequirementCourseId == id);
             if (isUsed)
             {
                 TempData["Error"] = "Cannot delete this course because it is used in other courses.";

@@ -76,10 +76,8 @@ namespace ExtensionDKM.Models
         public int Tuition { get; set; }
 
         // Prerequisites and dependencies
-        public List<Course> PreviousCourses { get; set; } = new();
-        public List<Course> NextCourses { get; set; } = new();
-        public List<Course> RequirementCourses { get; set; } = new();
-        public List<Course> RequiredBy { get; set; } = new();
+        public List<CoursePrevious> PreviousCourses { get; set; } = new();
+        public List<CourseRequirement> RequirementCourses { get; set; } = new();
 
         // A course can have many student
         public List<Assign> Assignments { get; set; } = new();
@@ -87,12 +85,28 @@ namespace ExtensionDKM.Models
         // A course can be multiple classrooms over time
         public List<Classroom> Classrooms { get; set; } = new();
     }
+    public class CoursePrevious
+    {
+        public int CourseId { get; set; }
+        public Course? Course { get; set; }
+
+        public int PreviousCourseId { get; set; }
+        public Course? PreviousCourse { get; set; }
+    }
+    public class CourseRequirement
+    {
+        public int CourseId { get; set; }
+        public Course? Course { get; set; }
+
+        public int RequirementCourseId { get; set; }
+        public Course? RequirementCourse { get; set; }
+    }
     public class Room
     {
         [Key]
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Capacity { get; set; }
+        public string? Name { get; set; }
+        public string? Capacity { get; set; }
         public List<Classroom> Classrooms { get; set; } = new();
     }
     public class Classroom

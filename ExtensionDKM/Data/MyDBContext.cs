@@ -10,6 +10,8 @@ namespace ExtensionDKM.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Major> Majors { get; set; }
         public DbSet<Course> Courses { get; set; }
+        public DbSet<CoursePrevious> CoursePrevious { get; set; }
+        public DbSet<CourseRequirement> CourseRequirement { get; set; }
         public DbSet<Assign> Assigns { get; set; }
         public DbSet<Score> Scores{ get; set; }
         public DbSet<ScoreTable> ScoresTables{ get; set; }
@@ -18,7 +20,7 @@ namespace ExtensionDKM.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-             //Seedin
+            //Seedin
             //base.OnModelCreating(modelBuilder);
             //modelBuilder.Entity<User>().HasData(
             //     new User
@@ -31,15 +33,37 @@ namespace ExtensionDKM.Data
             //    });
 
             //Course self-ref Many-to-Many relationships
-            modelBuilder.Entity<Course>() 
-                .HasMany(c => c.PreviousCourses)
-                .WithMany(c => c.NextCourses)
-                .UsingEntity(j => j.ToTable("CoursePrevious")); //1
+            //previous
+            modelBuilder.Entity<CoursePrevious>()
+                .HasKey(x => new { x.CourseId, x.PreviousCourseId });
 
-            modelBuilder.Entity<Course>()
-                .HasMany(c => c.RequirementCourses)
-                .WithMany(c => c.RequiredBy)
-                .UsingEntity(j => j.ToTable("CourseRequirement")); //2
+            modelBuilder.Entity<CoursePrevious>()
+                .HasOne(x => x.Course)
+                .WithMany(x => x.PreviousCourses)
+                .HasForeignKey(x => x.CourseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CoursePrevious>()
+                .HasOne(x => x.PreviousCourse)
+                .WithMany()
+                .HasForeignKey(x => x.PreviousCourseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //requirement
+            modelBuilder.Entity<CourseRequirement>()
+                .HasKey(x => new { x.CourseId, x.RequirementCourseId });
+
+            modelBuilder.Entity<CourseRequirement>()
+                .HasOne(x => x.Course)
+                .WithMany(x => x.RequirementCourses)
+                .HasForeignKey(x => x.CourseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CourseRequirement>()
+                .HasOne(x => x.RequirementCourse)
+                .WithMany()
+                .HasForeignKey(x => x.RequirementCourseId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Assign relation
             modelBuilder.Entity<Assign>()

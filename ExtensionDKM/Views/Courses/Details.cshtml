@@ -34,7 +34,7 @@
         <dd class="col-sm-10">
             @if (Model.PreviousCourses != null && Model.PreviousCourses.Any())
             {
-                @string.Join(", ", Model.PreviousCourses.Select(c => c.Name))
+                @string.Join(", ", Model.PreviousCourses.Select(c => c.PreviousCourse.Name))
             }
             else
             {
@@ -48,7 +48,7 @@
         <dd class="col-sm-10">
             @if (Model.RequirementCourses != null && Model.RequirementCourses.Any())
             {
-                @string.Join(", ", Model.RequirementCourses.Select(c => c.Name))
+                @string.Join(", ", Model.RequirementCourses.Select(c => c.RequirementCourse.Name))
             }
             else
             {
