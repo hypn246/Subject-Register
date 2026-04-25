@@ -1,8 +1,14 @@
-﻿@model IEnumerable<ExtensionDKM.Models.Classroom>
+﻿@* @model IEnumerable<ExtensionDKM.Models.Classroom> *@
+@model IEnumerable<ExtensionDKM.DTOs.ClassrommDTO>
 
 @{
     ViewData["Title"] = "Enroll class"; 
 }
+<style>
+    .max-td{
+        max-width:5rem;
+    }
+</style>
 
 <h1>Enroll courses and class</h1>
 
@@ -59,7 +65,7 @@
     }
 </style>
 
-<div class="container-fluid mt-4">
+<div class="container-fluid mt-4 mb-4">
 
     <div class="registration-card">
         <div class="registration-header">
@@ -72,27 +78,16 @@
         <table class="table">
         <thead>
             <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Time)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Room)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.SchoolYear)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Semester)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.SS)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Lecturer)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Course)
-                </th>
+                <th></th>
+                <th>Course Id</th>
+                <th>Course name</th>
+                <th>School year</th>
+                <th>Semester</th>
+                <th>Cap</th>
+                <th>Remain</th>
+                <th>Lecturer </th>
+                <th>Môn học trước</th>
+                <th>Môn học tiên quyết</th>
                 <th></th>
             </tr>
         </thead>
@@ -101,25 +96,35 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Time)
+                    <input type="checkbox"
+                            class="course-check"
+                            data-id="@item.Id"
+                            data-name="@item.CourseName"
+                            data-time="@item.Time"
+                            data-year="@item.SchoolYear"
+                            data-semester="@item.Semester"
+                            data-ss="@item.SS"
+                            data-lecturer="@item.LecturerName" />
                 </td>
+
+                <td>@Html.DisplayFor(modelItem => item.Time)</td>
+                <td>@item.CourseName</td>
+                <td>@Html.DisplayFor(modelItem => item.SchoolYear)</td>
+                <td>@Html.DisplayFor(modelItem => item.Semester)</td>
+                <td>@Html.DisplayFor(modelItem => item.SS)</td>
+                <td>-</td>
+                <td>@item.LecturerName</td>
+
                 <td>
-                            @item.Course?.Name
+                    @(item.PreviousCourses.Count > 0
+                        ? string.Join(", ", item.PreviousCourses)
+                        : "None")
                 </td>
+
                 <td>
-                    @Html.DisplayFor(modelItem => item.SchoolYear)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Semester)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.SS)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LecturerId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Course.Name)
+                    @(item.RequirementCourses.Count > 0
+                        ? string.Join(", ", item.RequirementCourses)
+                        : "None")
                 </td>
                 <td>
                     <a asp-controller="Courses" asp-action="Details" asp-route-id="@item.Id">Details</a> |
@@ -128,193 +133,101 @@
         }
         </tbody>
         </table>
-
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-borderless mb-0 align-middle" style="min-width: 1000px;">
-                    <thead>
-                        <tr class="filter-row bg-light">
-                            <td class="text-center text-primary" style="width: 40px;">
-                                <i class="fas fa-search"></i>
-                            </td>
-                            <td style="width: 100px;"><input type="text" placeholder="..."></td>
-                            <td style="width: 150px;"><input type="text" placeholder="..."></td>
-                            <td style="width: 80px;"><input type="text" placeholder="..."></td>
-                            <td style="width: 60px;"><input type="text" placeholder="..."></td>
-                            <td style="width: 100px;"><input type="text" placeholder="..."></td>
-                            <td style="width: 60px;"><input type="text" placeholder="..."></td>
-                            <td style="width: 60px;"><input type="text" placeholder="..."></td>
-                            <td><input type="text" placeholder="..."></td>
-                        </tr>
-                    </thead>
-                    
-                    <tbody>
-                        <tr class="border-bottom">
-                            <td class="text-center">
-                                <input class="form-check-input" type="checkbox" value="ITEC4415" id="chk_ITEC4415">
-                            </td>
-                            <td class="text-secondary">ITEC4415</td>
-                            <td class="text-secondary">Kiểm thử phần<br>mềm</td>
-                            <td class="text-secondary text-center">IT2302</td>
-                            <td class="text-secondary text-center">02</td>
-                            <td class="text-secondary text-center">3</td>
-                            <td class="text-secondary">DH23IT02</td>
-                            <td class="text-secondary text-center">35</td>
-                            <td class="text-secondary text-center">1</td>
-                            <td>
-                                <div class="schedule-scroll-box pe-2">
-                                    <div class="schedule-item"></div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
 
-    <div class="registration-card">
-        <div class="registration-header">
-            <h5>Danh sách môn học đã đăng ký: <span id="total-summary" class="text-danger">3 môn, 9 tín chỉ</span></h5> @* them id="total-summary" *@
-        </div>
+
+<div class="registration-card">
+    <div class="registration-header">
+        <h5>Danh sách môn học đã đăng ký: <span id="total-summary" class="text-danger">{} môn, {} tín chỉ</span></h5>
+    </div>
         
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle text-center" style="min-width: 1000px;">
-                    <thead class="table-custom-header">
-                        <tr>
-                            <th style="width: 50px;">Xóa</th>
-                            <th>Mã MH</th>
-                            <th class="text-start">Tên môn học</th>
-                            <th>Nhóm tổ</th>
-                            <th>Số TC</th>
-                            <th>Lớp</th>
-                            <th>Ngày đăng ký</th>
-                            <th>Trạng thái</th>
-                            <th>Thời khóa biểu</th>
-                            <th>Tách phiếu nộp tiền</th>
-                        </tr>
-                    </thead>
-                    <tbody id="registered-body"> @* them id="registered-body" *@
-                        <tr>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-link text-secondary p-0">
-                                    <i class="fas fa-times fs-5"></i>
-                                </button>
-                            </td>
-                            <td class="text-secondary">ITEC4415</td>
-                            <td class="text-start text-secondary">Kiểm thử phần mềm</td>
-                            <td class="text-secondary">IT2301</td>
-                            <td class="text-secondary">3</td>
-                            <td class="text-secondary">DH23IT03</td>
-                            <td class="text-secondary">16/01/2026 12:02:29</td>
-                            <td></td>
-                            <td>
-                                <button class="btn btn-sm btn-link text-primary">
-                                    <i class="fas fa-list"></i>
-                                </button>
-                            </td>
-                            <td>
-                                <select class="form-select form-select-sm bg-light text-secondary border-0" style="width: 100px; margin: 0 auto;">
-                                    <option></option>
-                                    <option value="1">Phiếu 1</option>
-                                </select>
-                            </td>
-                        </tr>
-                    </tbody>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table justify-content-center align-items-center text-center">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Mã môn học</th>
+                        <th>Tên môn học</th>
+                        <th>@Html.DisplayNameFor(model => model.SchoolYear)</th>
+                        <th>@Html.DisplayNameFor(model => model.Semester)</th>
+                        <th>@Html.DisplayNameFor(model => model.SS)</th>
+                        <th>Lecturer</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                 <tbody id="registered-body">
+                    @* // cloning *@
+                    <tr>
+                        <td><input type="checkbox" checked /></td>
+                        <td>1</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>6</td>
+                        <td>7</td>
+                    </tr>
+                </tbody>
                 </table>
-            </div>
         </div>
     </div>
-
 </div>
 
+</div>
+<button class="btn-toolbar">Enroll</button>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const registeredBody = document.getElementById('registered-body');
-        const checkboxes = document.querySelectorAll('.form-check-input');
-        
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function () {
-                const row = this.closest('tr');
-                const courseId = this.value;
-                
-                const slotCell = row.cells[8];
-                let currentSlots = parseInt(slotCell.innerText.trim(), 10);
+    document.addEventListener("DOMContentLoaded", function () {
+        const registeredBody = document.getElementById("registered-body");
+
+        document.querySelectorAll(".course-check").forEach(cb => {
+            cb.addEventListener("change", function () {
+                const id = this.dataset.id;
 
                 if (this.checked) {
-                    if (currentSlots <= 0) {
-                        alert("Môn học này đã hết chỗ!");
-                        this.checked = false; 
-                        return; 
-                    }
+                    if (registeredBody.querySelector(`[data-id="${id}"]`)) return;
 
-                    slotCell.innerText = currentSlots - 1;
+                    const row = document.createElement("tr");
+                    row.setAttribute("data-id", id);
+                    row.classList.add("p-2");
 
-                    const courseName = row.cells[2].innerText.replace('\n', ' ').trim();
-                    const courseGroup = row.cells[3].innerText.trim();
-                    const credits = row.cells[5].innerText.trim();
-                    const className = row.cells[6].innerText.trim();
-                    
-                    const now = new Date();
-                    const formattedDate = now.toLocaleString('vi-VN');
-
-                    // Dựng btn xoa
-                    const newRowHtml = `
-                        <tr id="reg-row-${courseId}">
-                            <td>
-                                <button type="button" class="btn btn-sm btn-link text-secondary p-0 btn-remove-course" data-id="${courseId}">
-                                        <img src="/css/img/dauX.png" style="width: 20px; height: 20px; object-fit: contain;">
-                                </button>
-                            </td>
-                            <td class="text-secondary">${courseId}</td>
-                            <td class="text-start text-secondary">${courseName}</td>
-                            <td class="text-secondary">${courseGroup}</td>
-                            <td class="text-secondary">${credits}</td>
-                            <td class="text-secondary">${className}</td>
-                            <td class="text-secondary">${formattedDate}</td>
-                            <td></td>
-                            <td>
-                                 <button class="btn btn-sm btn-link text-primary">
-                                    <img src="/css/img/menu.png" style="width: 20px; height: 20px; object-fit: contain;">
-                                 </button>
-                            </td>
-                            <td>
-                                <select class="form-select form-select-sm bg-light text-secondary border-0" style="width: 100px; margin: 0 auto;">
-                                    <option></option>
-                                    <option value="1">Phiếu 1</option>
-                                </select>
-                            </td>
-                        </tr>
+                    row.innerHTML = `
+                        <td>
+                            <input type="checkbox"
+                                   class="registered-check"
+                                   data-id="${id}"
+                                   checked />
+                        </td>
+                        <td>${this.dataset.id}</td>
+                        <td>${this.dataset.name}</td>
+                        <td>${this.dataset.year}</td>
+                        <td>${this.dataset.semester}</td>
+                        <td>${this.dataset.ss}</td>
+                        <td>${this.dataset.lecturer}</td>
+                        <td></td>
                     `;
-                    
-                    registeredBody.insertAdjacentHTML('beforeend', newRowHtml);
-                    
-                } else {
-                    slotCell.innerText = currentSlots + 1;
 
-                    const rowToRemove = document.getElementById(`reg-row-${courseId}`);
-                    if (rowToRemove) {
-                        rowToRemove.remove();
-                    }
+                    registeredBody.appendChild(row);
+
+                } else {
+                    const existing = registeredBody.querySelector(`[data-id="${id}"]`);
+                    if (existing) existing.remove();
                 }
             });
         });
 
-        registeredBody.addEventListener('click', function(e) {
-            const removeBtn = e.target.closest('.btn-remove-course');
-            if (removeBtn) {
-                const courseId = removeBtn.getAttribute('data-id');
-                
-                const checkbox = document.getElementById(`chk_${courseId}`);
-                if (checkbox) {
-                    checkbox.checked = false;
-                    checkbox.dispatchEvent(new Event('change'));
-                } else {
-                    const rowToRemove = document.getElementById(`reg-row-${courseId}`);
-                    if (rowToRemove) rowToRemove.remove();
-                }
+        registeredBody.addEventListener("change", function (e) {
+            if (!e.target.classList.contains("registered-check")) return;
+            const id = e.target.dataset.id;
+            if (!e.target.checked) {
+                // toogle
+                const row = e.target.closest("tr");
+                if (row) row.remove();
+
+                const top = document.querySelector(`.course-check[data-id="${id}"]`);
+                if (top) top.checked = false;
             }
         });
+
     });
 </script>
