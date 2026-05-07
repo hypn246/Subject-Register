@@ -1,9 +1,8 @@
-﻿using ExtensionDKM.Data;
+﻿using ExtensionDKM.BUS;
 using ExtensionDKM.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +13,12 @@ namespace ExtensionDKM.Controllers
     [Authorize(Roles ="Admin")]
     public class MajorsController : Controller
     {
-        private readonly MyDBContext _context;
+        private readonly IMajorService _majorService;
 
 
-        public MajorsController(MyDBContext context)
+        public MajorsController(IMajorService majorService)
         {
-            _context = context;
+            _majorService = majorService;
         }
 
         // GET: Majors
@@ -29,7 +28,7 @@ namespace ExtensionDKM.Controllers
             {
                 return RedirectToAction("Login");
             }
-            return View(await _context.Majors.ToListAsync());
+            return View(await _majorService.GetAllMajorsAsync());
         }
 
         // GET: Majors/Details/5
@@ -40,8 +39,7 @@ namespace ExtensionDKM.Controllers
                 return NotFound();
             }
 
-            var major = await _context.Majors
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var major = await _majorService.GetMajorByIdAsync(id.Value);
             if (major == null)
             {
                 return NotFound();
@@ -65,8 +63,7 @@ namespace ExtensionDKM.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(major);
-                await _context.SaveChangesAsync();
+                await _majorService.CreateMajorAsync(major);
                 return RedirectToAction(nameof(Index));
             }
             return View(major);
@@ -80,7 +77,7 @@ namespace ExtensionDKM.Controllers
                 return NotFound();
             }
 
-            var major = await _context.Majors.FindAsync(id);
+            var major = await _majorService.GetMajorByIdAsync(id.Value);
             if (major == null)
             {
                 return NotFound();
@@ -104,12 +101,12 @@ namespace ExtensionDKM.Controllers
             {
                 try
                 {
-                    _context.Update(major);
-                    await _context.SaveChangesAsync();
+                    await _majorService.UpdateMajorAsync(major);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (ArgumentException)
                 {
-                    if (!MajorExists(major.Id))
+                    var existingMajor = await _majorService.GetMajorByIdAsync(major.Id);
+                    if (existingMajor == null)
                     {
                         return NotFound();
                     }
@@ -131,8 +128,7 @@ namespace ExtensionDKM.Controllers
                 return NotFound();
             }
 
-            var major = await _context.Majors
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var major = await _majorService.GetMajorByIdAsync(id.Value);
             if (major == null)
             {
                 return NotFound();
@@ -146,19 +142,8 @@ namespace ExtensionDKM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var major = await _context.Majors.FindAsync(id);
-            if (major != null)
-            {
-                _context.Majors.Remove(major);
-            }
-
-            await _context.SaveChangesAsync();
+            await _majorService.DeleteMajorAsync(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool MajorExists(int id)
-        {
-            return _context.Majors.Any(e => e.Id == id);
         }
     }
 }

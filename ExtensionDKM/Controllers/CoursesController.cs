@@ -1,4 +1,5 @@
-﻿using ExtensionDKM.Data;
+﻿using ExtensionDKM.BUS;
+using ExtensionDKM.Data;
 using ExtensionDKM.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,28 +16,21 @@ namespace ExtensionDKM.Controllers
     [Authorize(Roles ="Admin")]
     public class CoursesController : Controller
     {
+        private readonly ICourseService _courseService;
+        private readonly IMajorService _majorService;
         private readonly MyDBContext _context;
 
-        public CoursesController(MyDBContext context)
+        public CoursesController(ICourseService courseService, IMajorService majorService, MyDBContext context)
         {
+            _courseService = courseService;
+            _majorService = majorService;
             _context = context;
         }
 
         // GET: Courses
         public async Task<IActionResult> Index()
         {
-            var courses = await _context.Courses
-                .Include(c => c.Major)
-
-                .Include(c => c.PreviousCourses)
-                    .ThenInclude(x => x.PreviousCourse)
-
-                .Include(c => c.RequirementCourses)
-                    .ThenInclude(x => x.RequirementCourse)
-
-                .AsSplitQuery()
-                .ToListAsync();
-
+            var courses = await _courseService.GetAllCoursesAsync();
             return View(courses);
         }
         // GET: Courses/Details/5
@@ -45,16 +39,7 @@ namespace ExtensionDKM.Controllers
             if (id == null)
                 return NotFound();
 
-            var course = await _context.Courses
-                .Include(c => c.Major)
-
-                .Include(c => c.PreviousCourses)
-                    .ThenInclude(x => x.PreviousCourse)
-
-                .Include(c => c.RequirementCourses)
-                    .ThenInclude(x => x.RequirementCourse)
-
-                .FirstOrDefaultAsync(c => c.Id == id);
+            var course = await _courseService.GetCourseByIdAsync(id.Value);
 
             if (course == null)
                 return NotFound();
@@ -66,8 +51,6 @@ namespace ExtensionDKM.Controllers
         // GET: Courses/Create
         public  async Task<IActionResult> Create()
         {
-            //ViewBag.Courses = _context.Courses.ToList();// List<Course> => foreach
-            //ViewBag.Majors = _context.Majors.ToList();// List<Course> => foreach
             ViewBag.Courses = await _context.Courses
                 .Select(c => new SelectListItem
                 {
@@ -101,8 +84,7 @@ namespace ExtensionDKM.Controllers
             }
             try
             {
-                _context.Courses.Add(course);
-                await _context.SaveChangesAsync();
+                await _courseService.CreateCourseAsync(course);
 
                 // add previous courses
                 if (PreviousCourseIds != null)
@@ -130,7 +112,6 @@ namespace ExtensionDKM.Controllers
                     }
                 }
 
-                _context.Add(course);
                 await _context.SaveChangesAsync();
 
             }
@@ -242,11 +223,11 @@ namespace ExtensionDKM.Controllers
                         }
                     }
 
-                    await _context.SaveChangesAsync(); 
+                    await _courseService.UpdateCourseAsync(courseReq);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (ArgumentException)
                 {
-                    if (!CourseExists(course.Id))
+                    if (await _courseService.GetCourseByIdAsync(course.Id) == null)
                     {
                         return NotFound();
                     }
@@ -268,8 +249,7 @@ namespace ExtensionDKM.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Courses
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var course = await _courseService.GetCourseByIdAsync(id.Value);
             if (course == null)
             {
                 return NotFound();
@@ -289,19 +269,8 @@ namespace ExtensionDKM.Controllers
                 TempData["Error"] = "Cannot delete this course because it is used in other courses.";
                 return RedirectToAction("Delete",id);
             }
-            var course = await _context.Courses.FindAsync(id);
-            if (course != null)
-            {
-                _context.Courses.Remove(course);
-            }
-
-            await _context.SaveChangesAsync();
+            await _courseService.DeleteCourseAsync(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool CourseExists(int id)
-        {
-            return _context.Courses.Any(e => e.Id == id);
         }
     }
 }

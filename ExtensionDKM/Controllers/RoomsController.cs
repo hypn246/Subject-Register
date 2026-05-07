@@ -5,24 +5,24 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ExtensionDKM.Data;
+using ExtensionDKM.BUS;
 using ExtensionDKM.Models;
 
 namespace ExtensionDKM.Controllers
 {
     public class RoomsController : Controller
     {
-        private readonly MyDBContext _context;
+        private readonly IRoomService _roomService;
 
-        public RoomsController(MyDBContext context)
+        public RoomsController(IRoomService roomService)
         {
-            _context = context;
+            _roomService = roomService;
         }
 
         // GET: Rooms
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Room.ToListAsync());
+            return View(await _roomService.GetAllRoomsAsync());
         }
 
         // GET: Rooms/Details/5
@@ -33,8 +33,7 @@ namespace ExtensionDKM.Controllers
                 return NotFound();
             }
 
-            var room = await _context.Room
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var room = await _roomService.GetRoomByIdAsync(id.Value);
             if (room == null)
             {
                 return NotFound();
@@ -58,8 +57,7 @@ namespace ExtensionDKM.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(room);
-                await _context.SaveChangesAsync();
+                await _roomService.CreateRoomAsync(room);
                 return RedirectToAction(nameof(Index));
             }
             return View(room);
@@ -73,7 +71,7 @@ namespace ExtensionDKM.Controllers
                 return NotFound();
             }
 
-            var room = await _context.Room.FindAsync(id);
+            var room = await _roomService.GetRoomByIdAsync(id.Value);
             if (room == null)
             {
                 return NotFound();
@@ -97,12 +95,12 @@ namespace ExtensionDKM.Controllers
             {
                 try
                 {
-                    _context.Update(room);
-                    await _context.SaveChangesAsync();
+                    await _roomService.UpdateRoomAsync(room);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (ArgumentException)
                 {
-                    if (!RoomExists(room.Id))
+                    var existingRoom = await _roomService.GetRoomByIdAsync(room.Id);
+                    if (existingRoom == null)
                     {
                         return NotFound();
                     }
@@ -124,8 +122,7 @@ namespace ExtensionDKM.Controllers
                 return NotFound();
             }
 
-            var room = await _context.Room
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var room = await _roomService.GetRoomByIdAsync(id.Value);
             if (room == null)
             {
                 return NotFound();
@@ -139,19 +136,8 @@ namespace ExtensionDKM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var room = await _context.Room.FindAsync(id);
-            if (room != null)
-            {
-                _context.Room.Remove(room);
-            }
-
-            await _context.SaveChangesAsync();
+            await _roomService.DeleteRoomAsync(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool RoomExists(int id)
-        {
-            return _context.Room.Any(e => e.Id == id);
         }
     }
 }

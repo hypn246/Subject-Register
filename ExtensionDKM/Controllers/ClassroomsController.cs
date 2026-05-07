@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using ExtensionDKM.BUS;
 using ExtensionDKM.Data;
 using ExtensionDKM.Models;
 
@@ -12,18 +13,20 @@ namespace ExtensionDKM.Controllers
 {
     public class ClassroomsController : Controller
     {
+        private readonly IClassroomService _classroomService;
         private readonly MyDBContext _context;
 
-        public ClassroomsController(MyDBContext context)
+        public ClassroomsController(IClassroomService classroomService, MyDBContext context)
         {
+            _classroomService = classroomService;
             _context = context;
         }
 
         // GET: Classrooms
         public async Task<IActionResult> Index()
         {
-            var myDBContext = _context.Classrooms.Include(c => c.Course).Include(c => c.Lecturer).Include(c => c.Room);
-            return View(await myDBContext.ToListAsync());
+            var classrooms = await _classroomService.GetAllClassroomsAsync();
+            return View(classrooms);
         }
 
         // GET: Classrooms/Details/5
@@ -34,11 +37,7 @@ namespace ExtensionDKM.Controllers
                 return NotFound();
             }
 
-            var classroom = await _context.Classrooms
-                .Include(c => c.Course)
-                .Include(c => c.Lecturer)
-                .Include(c => c.Room)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var classroom = await _classroomService.GetClassroomByIdAsync(id.Value);
             if (classroom == null)
             {
                 return NotFound();
@@ -66,9 +65,6 @@ namespace ExtensionDKM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(string Semester, [Bind("Id,Time,RoomId,SchoolYear,SS,LecturerId,CourseId")] Classroom classroom)
         {
-            var existing = await _context.Classrooms.Where(c => c.LecturerId == classroom.LecturerId)
-                .ToListAsync();
-
             var conflict = await _context.Classrooms.FirstOrDefaultAsync(c =>
                 c.LecturerId == classroom.LecturerId &&
                 c.SchoolYear == classroom.SchoolYear &&
@@ -89,8 +85,7 @@ namespace ExtensionDKM.Controllers
             if (ModelState.IsValid)
             {
                 classroom.Semester = int.Parse(Semester);
-                _context.Add(classroom);
-                await _context.SaveChangesAsync();
+                await _classroomService.CreateClassroomAsync(classroom);
                 return RedirectToAction(nameof(Index));
             }
             return View(classroom);
@@ -104,7 +99,7 @@ namespace ExtensionDKM.Controllers
                 return NotFound();
             }
 
-            var classroom = await _context.Classrooms.FindAsync(id);
+            var classroom = await _classroomService.GetClassroomByIdAsync(id.Value);
             if (classroom == null)
             {
                 return NotFound();
@@ -126,14 +121,7 @@ namespace ExtensionDKM.Controllers
             {
                 return NotFound();
             }
-            // //LINQ
-            //var conflict = await (from classrooms in  _context.Classrooms
-            //                      where (classrooms.LecturerId == classroom.Id 
-            //                      && classrooms.SchoolYear == classroom.SchoolYear
-            //                      && classrooms.Semester == classroom.Semester
-            //                      && classrooms.Time == classroom.Time)
-            //                      select classrooms).FirstOrDefaultAsync();
-            //LINQ method
+            
             var conflict = await _context.Classrooms.FirstOrDefaultAsync(c =>
                 c.LecturerId == classroom.LecturerId &&
                 c.SchoolYear == classroom.SchoolYear &&
@@ -156,12 +144,11 @@ namespace ExtensionDKM.Controllers
             {
                 try
                 {
-                    _context.Update(classroom);
-                    await _context.SaveChangesAsync();
+                    await _classroomService.UpdateClassroomAsync(classroom);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (ArgumentException)
                 {
-                    if (!ClassroomExists(classroom.Id))
+                    if (await _classroomService.GetClassroomByIdAsync(classroom.Id) == null)
                     {
                         return NotFound();
                     }
@@ -183,11 +170,7 @@ namespace ExtensionDKM.Controllers
                 return NotFound();
             }
 
-            var classroom = await _context.Classrooms
-                .Include(c => c.Course)
-                .Include(c => c.Lecturer)
-                .Include(c => c.Room)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var classroom = await _classroomService.GetClassroomByIdAsync(id.Value);
             if (classroom == null)
             {
                 return NotFound();
@@ -201,19 +184,8 @@ namespace ExtensionDKM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var classroom = await _context.Classrooms.FindAsync(id);
-            if (classroom != null)
-            {
-                _context.Classrooms.Remove(classroom);
-            }
-
-            await _context.SaveChangesAsync();
+            await _classroomService.DeleteClassroomAsync(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ClassroomExists(int id)
-        {
-            return _context.Classrooms.Any(e => e.Id == id);
         }
     }
 }

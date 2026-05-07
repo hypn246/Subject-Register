@@ -95,7 +95,7 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>
+                <td>@Html.AntiForgeryToken()
                     <input type="checkbox"
                             class="course-check"
                             data-id="@item.Id"
@@ -104,7 +104,8 @@
                             data-year="@item.SchoolYear"
                             data-semester="@item.Semester"
                             data-ss="@item.SS"
-                            data-lecturer="@item.LecturerName" />
+                            data-lecturer="@item.LecturerName" 
+                            checked="@(item.IsAssigned)" />
                 </td>
 
                 <td>@Html.DisplayFor(modelItem => item.Time)</td>
@@ -112,7 +113,7 @@
                 <td>@Html.DisplayFor(modelItem => item.SchoolYear)</td>
                 <td>@Html.DisplayFor(modelItem => item.Semester)</td>
                 <td>@Html.DisplayFor(modelItem => item.SS)</td>
-                <td>-</td>
+                <td>@item.Remain</td>
                 <td>@item.LecturerName</td>
 
                 <td>
@@ -156,17 +157,25 @@
                         <th></th>
                     </tr>
                 </thead>
-                 <tbody id="registered-body">
-                    @* // cloning *@
-                    <tr>
-                        <td><input type="checkbox" checked /></td>
-                        <td>1</td>
-                        <td>3</td>
-                        <td>4</td>
-                        <td>5</td>
-                        <td>6</td>
-                        <td>7</td>
-                    </tr>
+                <tbody id="registered-body">
+                    @foreach (var item in Model.Where(x => x.IsAssigned))
+                    {
+                        <tr data-id="@item.Id" class="p-2">
+                            <td>
+                                <input type="checkbox"
+                                        class="registered-check"
+                                        data-id="@item.Id"
+                                        checked />
+                            </td>
+                            <td>@item.Id</td>
+                            <td>@item.CourseName</td>
+                            <td>@item.SchoolYear</td>
+                            <td>@item.Semester</td>
+                            <td>@item.SS</td>
+                            <td>@item.LecturerName</td>
+                            <td></td>
+                        </tr>
+                    }
                 </tbody>
                 </table>
         </div>
@@ -230,4 +239,81 @@
         });
 
     });
+    
+</script>
+
+<script>
+    //display registed
+    function updateSummary() {
+    const rows = document.querySelectorAll("#registered-body tr");
+    const totalCourses = rows.length;
+
+    let totalCredits = 0;
+    rows.forEach(r => {
+        totalCredits += parseInt(r.children[5].innerText);
+    });
+
+    document.getElementById("total-summary").innerText =
+        `${totalCourses} môn, ${totalCredits} tín chỉ`;
+    }
+    //registed toogle
+    document.addEventListener("change", function (e) {
+        if (e.target.classList.contains("registered-check")) {
+            const id = e.target.dataset.id;
+
+            //uncheck top checkbox
+            const top = document.querySelector(`.course-check[data-id="${id}"]`);
+            if (top) top.checked = false;
+
+            // trigger change event 
+            top.dispatchEvent(new Event("change"));
+        }
+    });
+    
+    //post
+    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+    document.querySelectorAll(".course-check").forEach(cb => {
+        cb.addEventListener("change", function () {
+
+            const classroomId = this.dataset.id; 
+            const isChecked = this.checked;        
+
+            console.log("Sending:", classroomId, isChecked);
+
+            fetch(`/Enroll/ToggleEnroll?classroomId=${classroomId}&isChecked=${isChecked}`, {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': token
+                }
+            })
+            .then(async res => {
+                if (!res.ok) {
+                    const text = await res.text();
+                    throw new Error(text);
+                }
+                alert("DKM ok!");
+                // ++ --
+                const row = cb.closest("tr");
+                const remainCell = row.children[6];
+
+                let remain = parseInt(remainCell.innerText);
+
+                if (isChecked) remain--;
+                else remain++;
+
+                remainCell.innerText = remain;
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Fail when save");
+            });
+
+
+        });
+    });
+
+    //inti
+    window.onload = function () {
+        updateSummary();
+    };
 </script>

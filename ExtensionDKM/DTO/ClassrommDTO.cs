@@ -13,7 +13,10 @@ namespace ExtensionDKM.DTOs
         public string LecturerName { get; set; }
         public string RoomName { get; set; }
 
-        public List<string> PreviousCourses { get; set; } = new();
-        public List<string> RequirementCourses { get; set; } = new();
+        public List<string>? PreviousCourses { get; set; } = new();
+        public List<string>? RequirementCourses { get; set; } = new();
+        public bool IsAssigned { get; set; }
+        public int AssignedCount { get; set; }
+        public int Remain => SS - AssignedCount;
     }
 }

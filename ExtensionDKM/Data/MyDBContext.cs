@@ -73,10 +73,9 @@ namespace ExtensionDKM.Data
                 .OnDelete(DeleteBehavior.NoAction); //3
 
             modelBuilder.Entity<Assign>()
-                .HasOne(a => a.Course)
+                .HasOne(a => a.Classroom)
                 .WithMany(c => c.Assignments)
-                .HasForeignKey(a => a.CourseId)
-                .OnDelete(DeleteBehavior.NoAction); //4
+                .HasForeignKey(a => a.ClassroomId);
 
             // Assign - Score / 1-1
             modelBuilder.Entity<Assign>()
