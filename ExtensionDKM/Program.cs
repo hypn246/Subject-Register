@@ -1,4 +1,3 @@
-using ExtensionDKM.Data;
 using ExtensionDKM.DAL;
 using ExtensionDKM.BUS;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -14,16 +13,18 @@ builder.Services.AddDbContext<MyDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
 
 //DAL
-builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-builder.Services.AddScoped<IMajorRepository, MajorRepository>();
-builder.Services.AddScoped<IClassroomRepository, ClassroomRepository>();
-builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+builder.Services.AddScoped<CourseRepository, CourseRepository>();
+builder.Services.AddScoped<MajorRepository, MajorRepository>();
+builder.Services.AddScoped<ClassroomRepository, ClassroomRepository>();
+builder.Services.AddScoped<RoomRepository, RoomRepository>();
+builder.Services.AddScoped<EnrollRepository>();
 
 //BUS
-builder.Services.AddScoped<ICourseService, CourseService>();
-builder.Services.AddScoped<IMajorService, MajorService>();
-builder.Services.AddScoped<IClassroomService, ClassroomService>();
-builder.Services.AddScoped<IRoomService, RoomService>();
+builder.Services.AddScoped<CourseService, CourseService>();
+builder.Services.AddScoped<MajorService, MajorService>();
+builder.Services.AddScoped<ClassroomService, ClassroomService>();
+builder.Services.AddScoped<RoomService, RoomService>();
+builder.Services.AddScoped<EnrollServices>();
 
 // Add authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

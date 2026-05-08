@@ -3,11 +3,11 @@ using ExtensionDKM.Models;
 
 namespace ExtensionDKM.BUS
 {
-    public class RoomService : IRoomService
+    public class RoomService 
     {
-        private readonly IRoomRepository _roomRepository;
+        private readonly RoomRepository _roomRepository;
 
-        public RoomService(IRoomRepository roomRepository)
+        public RoomService(RoomRepository roomRepository)
         {
             _roomRepository = roomRepository;
         }

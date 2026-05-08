@@ -1,5 +1,4 @@
-﻿@* 1. KHAI BÁO MODEL: Chỉ định trang này dùng dữ liệu của lớp Classroom *@
-@model ExtensionDKM.Models.Classroom
+﻿@model ExtensionDKM.Models.Classroom
 
 @{
     ViewData["Title"] = "Create Classroom";
@@ -10,26 +9,18 @@
         <div class="col-lg-9">
             <div class="card shadow-sm border-0">
 
-                @* HEADER: Tiêu đề xanh của khung nhập liệu *@
                 <div class="card-header bg-success text-white py-3">
                     <h5 class="mb-0"><i class="bi bi-door-open-fill me-2"></i>Create New Classroom</h5>
                 </div>
 
                 <div class="card-body p-4">
-                    @* FORM: Gửi dữ liệu về hàm 'Create' trong Controller khi bấm nút *@
                     <form asp-action="Create">
-
-                        @* TỔNG HỢP LỖI: Hiển thị danh sách các lỗi nhập liệu nếu có *@
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-                        @* --- PHẦN 1: COURSE (MÔN HỌC) & LECTURER (GIẢNG VIÊN) --- *@
                         <div class="row mb-4">
-                            @* Ô CHỌN MÔN HỌC (COURSE) *@
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Course" class="form-label fw-bold"></label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light"><i class="bi bi-book"></i></span>
-                                    @* asp-items="ViewBag.CourseId": Đổ danh sách môn học từ Server vào đây *@
                                     <select asp-for="CourseId" class="form-select" asp-items="ViewBag.CourseId">
                                         <option value="" disabled selected>-- Select Course --</option>
                                     </select>
@@ -37,12 +28,10 @@
                                 <span asp-validation-for="CourseId" class="text-danger"></span>
                             </div>
 
-                            @* Ô CHỌN GIẢNG VIÊN (LECTURER) *@
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Lecturer" class="form-label fw-bold"></label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light"><i class="bi bi-person-badge"></i></span>
-                                    @* asp-items="ViewBag.LecturerId": Đổ danh sách giảng viên từ Server vào đây *@
                                     <select asp-for="LecturerId" class="form-select" asp-items="ViewBag.LecturerId">
                                         <option value="" disabled selected>-- Select Lecturer --</option>
                                     </select>
@@ -53,41 +42,54 @@
 
                         <hr class="my-4 text-muted" />
 
-                        @* --- PHẦN 2: THỜI GIAN, PHÒNG HỌC & HỌC KỲ --- *@
+
                         <div class="row">
-                            @* CHỌN CA HỌC (TIME) *@
+
                             <div class="col-md-4 mb-3">
                                 <label asp-for="Time" class="form-label fw-bold"></label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light"><i class="bi bi-clock"></i></span>
                                     <select asp-for="Time" class="form-select">
-                                        @* Vòng lặp tự động tạo ra 8 ca học từ 1 đến 8 *@
+                                        <option value="">---Choose---</option>
                                         @for (int i = 1; i <= 8; i++)
                                         {
-                                            <option value="@i">Shift @i</option>
+                                            <option value="@i">Time @i</option>
                                         }
                                     </select>
                                 </div>
                                 <span asp-validation-for="Time" class="text-danger"></span>
                             </div>
 
-                            @* CHỌN PHÒNG HỌC (ROOM) *@
                             <div class="col-md-4 mb-3">
                                 <label asp-for="Room" class="form-label fw-bold"></label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light"><i class="bi bi-geo-alt"></i></span>
-                                    @* asp-items="ViewBag.RoomId": Đổ danh sách phòng học hiện có *@
-                                    <select asp-for="RoomId" class="form-select" asp-items="ViewBag.RoomId">
-                                        <option value="" disabled selected>-- Room --</option>
+                                    <select asp-for="RoomId"
+                                            class="form-select"
+                                            id="roomSelect">
+
+                                        <option value="" disabled selected>
+                                            -- Room --
+                                        </option>
+
+                                        @foreach (var room in ViewBag.Rooms)
+                                        {
+                                            <option value="@room.Id"
+                                                    data-capacity="@room.Capacity">
+                                                @room.Name
+                                            </option>
+                                        }
                                     </select>
                                 </div>
                                 <span asp-validation-for="RoomId" class="text-danger"></span>
                             </div>
 
-                            @* CHỌN HỌC KỲ (SEMESTER) *@
                             <div class="col-md-4 mb-3">
                                 <label asp-for="Semester" class="form-label fw-bold"></label>
-                                <select asp-for="Semester" class="form-select">
+                                @* base on month *@
+                                <select asp-for="Semester"
+                                        class="form-select"
+                                        id="semesterSelect">
                                     <option value="">-- Semester --</option>
                                     <option value="1">Semester 1</option>
                                     <option value="2">Semester 2</option>
@@ -97,33 +99,34 @@
                             </div>
                         </div>
 
-                        @* --- PHẦN 3: CHI TIẾT NĂM HỌC & SĨ SỐ --- *@
                         <div class="row mt-2">
-                            @* NHẬP NĂM HỌC (SCHOOL YEAR) *@
                             <div class="col-md-6 mb-3">
                                 <label asp-for="SchoolYear" class="form-label fw-bold"></label>
-                                <input asp-for="SchoolYear" class="form-control" placeholder="e.g. 2023-2024" />
+                                @* current year *@
+                                <input asp-for="SchoolYear"
+                                       class="form-control"
+                                       id="schoolYearInput" />
                                 <span asp-validation-for="SchoolYear" class="text-danger"></span>
                             </div>
 
-                            @* NHẬP SĨ SỐ SINH VIÊN (SS) *@
                             <div class="col-md-6 mb-3">
                                 <label asp-for="SS" class="form-label fw-bold">Student Size (SS)</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light"><i class="bi bi-people"></i></span>
-                                    <input asp-for="SS" class="form-control" placeholder="Max students..." />
+                                    @* SS base on class capacity*@
+                                    <input asp-for="SS"
+                                           class="form-control"
+                                           placeholder="Max students..."
+                                           id="ssInput" value="" />
                                 </div>
                                 <span asp-validation-for="SS" class="text-danger"></span>
                             </div>
                         </div>
 
-                        @* --- NÚT BẤM THAO TÁC --- *@
                         <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                            @* Nút quay lại danh sách *@
                             <a asp-action="Index" class="btn btn-link text-decoration-none text-secondary p-0">
                                 <i class="bi bi-arrow-left"></i> Back to List
                             </a>
-                            @* Nút xác nhận tạo lớp học *@
                             <button type="submit" class="btn btn-success px-5 shadow-sm">
                                 <i class="bi bi-check-circle me-1"></i> Create Classroom
                             </button>
@@ -136,13 +139,11 @@
 </div>
 
 @section Scripts {
-    @* Script hỗ trợ kiểm tra lỗi Client-side (không cần tải lại trang) *@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
     <style>
-        /* CSS để làm đẹp giao diện: Bo góc, đổ bóng, hiệu ứng focus */
         .card {
             border-radius: 12px;
             overflow: hidden;
@@ -164,7 +165,6 @@
                 border-color: #198754;
                 box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.1);
             }
-        /* Tinh chỉnh để Icon và Ô nhập liệu khít nhau */
         .input-group-text {
             border-radius: 8px 0 0 8px;
             border-right: none;
@@ -181,3 +181,71 @@
         }
     </style>
 }
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // SEMESTER + YEAR
+        const now = new Date();
+
+        const month = now.getMonth() + 1;
+        const year = now.getFullYear();
+
+        const semesterSelect =
+            document.getElementById("semesterSelect");
+
+        const schoolYearInput =
+            document.getElementById("schoolYearInput");
+
+        let semester = 1;
+
+        // Jan-Apr  => Semester 2
+        // May-Aug  => Semester 3
+        // Sep-Dec  => Semester 1
+
+        if (month >= 1 && month <= 4)
+        {
+            semester = 2;
+        }
+        else if (month >= 5 && month <= 8)
+        {
+            semester = 3;
+        }
+        else
+        {
+            semester = 1;
+        }
+        semesterSelect.value = semester; 
+        semesterSelect.disabled=true;
+
+        schoolYearInput.value = year;
+        schoolYearInput.disabled=true;
+
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const roomSelect = document.getElementById("roomSelect");
+        const ssInput = document.getElementById("ssInput");
+
+        if (!roomSelect || !ssInput) return;
+
+        roomSelect.addEventListener("change", function () {
+
+            const selectedOption =
+                this.options[this.selectedIndex];
+
+            const capacity =
+                selectedOption.dataset.capacity;
+
+            // safety check
+            if (capacity) {
+                ssInput.value = capacity;
+                ssInput.disabled = true;
+            } else {
+                ssInput.value = "";
+            }
+        });
+
+    });
+</script>

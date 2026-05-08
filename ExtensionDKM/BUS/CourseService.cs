@@ -3,11 +3,11 @@ using ExtensionDKM.Models;
 
 namespace ExtensionDKM.BUS
 {
-    public class CourseService : ICourseService
+    public class CourseService 
     {
-        private readonly ICourseRepository _courseRepository;
+        private readonly CourseRepository _courseRepository;
 
-        public CourseService(ICourseRepository courseRepository)
+        public CourseService(CourseRepository courseRepository)
         {
             _courseRepository = courseRepository;
         }
@@ -27,8 +27,9 @@ namespace ExtensionDKM.BUS
 
         public async Task<Course> CreateCourseAsync(Course course)
         {
-            if (course == null)
-                throw new ArgumentNullException(nameof(course));
+            //if (course == null)
+            //    throw new ArgumentNullException(nameof(course));
+            ArgumentNullException.ThrowIfNull(course);
 
             if (string.IsNullOrWhiteSpace(course.Name))
                 throw new ArgumentException("Course name is required");
@@ -38,8 +39,9 @@ namespace ExtensionDKM.BUS
 
         public async Task<Course> UpdateCourseAsync(Course course)
         {
-            if (course == null)
-                throw new ArgumentNullException(nameof(course));
+            //if (course == null)
+            //    throw new ArgumentNullException(nameof(course));
+            ArgumentNullException.ThrowIfNull(course);
 
             if (string.IsNullOrWhiteSpace(course.Name))
                 throw new ArgumentException("Course name is required");

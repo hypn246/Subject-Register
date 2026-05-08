@@ -1,5 +1,5 @@
 ﻿using ExtensionDKM.BUS;
-using ExtensionDKM.Data;
+using ExtensionDKM.DAL;
 using ExtensionDKM.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +16,11 @@ namespace ExtensionDKM.Controllers
     [Authorize(Roles ="Admin")]
     public class CoursesController : Controller
     {
-        private readonly ICourseService _courseService;
-        private readonly IMajorService _majorService;
+        private readonly CourseService _courseService;
+        private readonly MajorService _majorService;
         private readonly MyDBContext _context;
 
-        public CoursesController(ICourseService courseService, IMajorService majorService, MyDBContext context)
+        public CoursesController(CourseService courseService, MajorService majorService, MyDBContext context)
         {
             _courseService = courseService;
             _majorService = majorService;

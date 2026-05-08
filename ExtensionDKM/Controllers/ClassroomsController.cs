@@ -6,17 +6,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ExtensionDKM.BUS;
-using ExtensionDKM.Data;
 using ExtensionDKM.Models;
+using ExtensionDKM.DAL;
 
 namespace ExtensionDKM.Controllers
 {
     public class ClassroomsController : Controller
     {
-        private readonly IClassroomService _classroomService;
+        private readonly ClassroomService _classroomService;
         private readonly MyDBContext _context;
 
-        public ClassroomsController(IClassroomService classroomService, MyDBContext context)
+        public ClassroomsController(ClassroomService classroomService, MyDBContext context)
         {
             _classroomService = classroomService;
             _context = context;
@@ -24,7 +24,7 @@ namespace ExtensionDKM.Controllers
 
         // GET: Classrooms
         public async Task<IActionResult> Index()
-        {
+        { 
             var classrooms = await _classroomService.GetAllClassroomsAsync();
             return View(classrooms);
         }
@@ -32,6 +32,7 @@ namespace ExtensionDKM.Controllers
         // GET: Classrooms/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            
             if (id == null)
             {
                 return NotFound();
@@ -54,7 +55,7 @@ namespace ExtensionDKM.Controllers
             ViewData["LecturerId"] = new SelectList(lecturers, "Id", "Name");
 
             ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Name");
-            ViewData["RoomId"] = new SelectList(_context.Room, "Id", "Name");
+            ViewBag.Rooms = await _context.Room.ToListAsync();
             return View();
         }
 

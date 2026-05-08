@@ -1,10 +1,10 @@
-using ExtensionDKM.Data;
 using ExtensionDKM.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace ExtensionDKM.DAL
 {
-    public class MajorRepository : IMajorRepository
+    public class MajorRepository
     {
         private readonly MyDBContext _context;
 

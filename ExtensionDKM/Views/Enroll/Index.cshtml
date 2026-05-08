@@ -1,5 +1,5 @@
 ﻿@* @model IEnumerable<ExtensionDKM.Models.Classroom> *@
-@model IEnumerable<ExtensionDKM.DTOs.ClassrommDTO>
+@model IEnumerable<ExtensionDKM.DTO.ClassrommDTO>
 
 @{
     ViewData["Title"] = "Enroll class"; 
@@ -76,6 +76,7 @@
         </div>
 
         <table class="table">
+            @Html.AntiForgeryToken()
         <thead>
             <tr>
                 <th></th>
@@ -83,7 +84,9 @@
                 <th>Course name</th>
                 <th>School year</th>
                 <th>Semester</th>
+                <th>Thời gian</th>
                 <th>Cap</th>
+                <th>SS hiện tại</th>
                 <th>Remain</th>
                 <th>Lecturer </th>
                 <th>Môn học trước</th>
@@ -95,7 +98,7 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@Html.AntiForgeryToken()
+                <td>
                     <input type="checkbox"
                             class="course-check"
                             data-id="@item.Id"
@@ -105,25 +108,28 @@
                             data-semester="@item.Semester"
                             data-ss="@item.SS"
                             data-lecturer="@item.LecturerName" 
-                            checked="@(item.IsAssigned)" />
+                            @* checked="@(item.IsAssigned)" *@
+                            @(item.IsAssigned ? "checked" : "") />
                 </td>
 
-                <td>@Html.DisplayFor(modelItem => item.Time)</td>
+                <td>@item.CourseId</td>
                 <td>@item.CourseName</td>
                 <td>@Html.DisplayFor(modelItem => item.SchoolYear)</td>
                 <td>@Html.DisplayFor(modelItem => item.Semester)</td>
-                <td>@Html.DisplayFor(modelItem => item.SS)</td>
+                <td>@Html.DisplayFor(modelItem => item.Time)</td>
+                <td>@item.Capacity</td>
+                <td>@item.SS</td>
                 <td>@item.Remain</td>
                 <td>@item.LecturerName</td>
 
                 <td>
-                    @(item.PreviousCourses.Count > 0
+                    @(item.PreviousCourses != null && item.PreviousCourses.Any()
                         ? string.Join(", ", item.PreviousCourses)
                         : "None")
                 </td>
 
                 <td>
-                    @(item.RequirementCourses.Count > 0
+                    @(item.RequirementCourses != null && item.RequirementCourses.Any()
                         ? string.Join(", ", item.RequirementCourses)
                         : "None")
                 </td>
@@ -151,6 +157,7 @@
                         <th>Mã môn học</th>
                         <th>Tên môn học</th>
                         <th>@Html.DisplayNameFor(model => model.SchoolYear)</th>
+                        <th>@Html.DisplayNameFor(model => model.Time)</th>
                         <th>@Html.DisplayNameFor(model => model.Semester)</th>
                         <th>@Html.DisplayNameFor(model => model.SS)</th>
                         <th>Lecturer</th>
@@ -167,9 +174,10 @@
                                         data-id="@item.Id"
                                         checked />
                             </td>
-                            <td>@item.Id</td>
+                            <td>@item.CourseId</td>
                             <td>@item.CourseName</td>
                             <td>@item.SchoolYear</td>
+                            <td>@item.Time</td>
                             <td>@item.Semester</td>
                             <td>@item.SS</td>
                             <td>@item.LecturerName</td>
@@ -183,137 +191,64 @@
 </div>
 
 </div>
-<button class="btn-toolbar">Enroll</button>
+<button class="btn btn-primary">Enroll</button>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+
+        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
         const registeredBody = document.getElementById("registered-body");
 
         document.querySelectorAll(".course-check").forEach(cb => {
-            cb.addEventListener("change", function () {
-                const id = this.dataset.id;
 
-                if (this.checked) {
-                    if (registeredBody.querySelector(`[data-id="${id}"]`)) return;
+            cb.addEventListener("change", async function () {
 
-                    const row = document.createElement("tr");
-                    row.setAttribute("data-id", id);
-                    row.classList.add("p-2");
+                const classroomId = this.dataset.id;
+                const isChecked = this.checked;
 
-                    row.innerHTML = `
-                        <td>
-                            <input type="checkbox"
-                                   class="registered-check"
-                                   data-id="${id}"
-                                   checked />
-                        </td>
-                        <td>${this.dataset.id}</td>
-                        <td>${this.dataset.name}</td>
-                        <td>${this.dataset.year}</td>
-                        <td>${this.dataset.semester}</td>
-                        <td>${this.dataset.ss}</td>
-                        <td>${this.dataset.lecturer}</td>
-                        <td></td>
-                    `;
+                try {
+                    const res = await fetch(`/Enroll/ToggleEnroll?classroomId=${classroomId}&isChecked=${isChecked}`, {
+                        method: "POST",
+                        headers: {
+                            "RequestVerificationToken": token
+                        }
+                    });
 
-                    registeredBody.appendChild(row);
+                    if (!res.ok) throw new Error(await res.text());
 
-                } else {
-                    const existing = registeredBody.querySelector(`[data-id="${id}"]`);
-                    if (existing) existing.remove();
+                    if (isChecked) {
+                        if (!registeredBody.querySelector(`[data-id="${classroomId}"]`)) {
+
+                            const row = document.createElement("tr");
+                            row.setAttribute("data-id", classroomId);
+
+                            row.innerHTML = `
+                                <td><input type="checkbox" class="registered-check" data-id="${classroomId}" checked /></td>
+                                <td>${this.dataset.id}</td>
+                                <td>${this.dataset.name}</td>
+                                <td>${this.dataset.year}</td>
+                                <td>${this.dataset.time}</td>
+                                <td>${this.dataset.semester}</td>
+                                <td>${this.dataset.ss}</td>
+                                <td>${this.dataset.lecturer}</td>
+                            `;
+
+                            registeredBody.appendChild(row);
+                        }
+                    } else {
+                        const row = registeredBody.querySelector(`[data-id="${classroomId}"]`);
+                        if (row) row.remove();
+                    }
+                    alert("DKM ok!")
+
+                } catch (err) {
+                    console.error(err);
+                    alert("Fail when save");
+
+                    // rollback checkbox
+                    this.checked = !isChecked;
                 }
             });
         });
-
-        registeredBody.addEventListener("change", function (e) {
-            if (!e.target.classList.contains("registered-check")) return;
-            const id = e.target.dataset.id;
-            if (!e.target.checked) {
-                // toogle
-                const row = e.target.closest("tr");
-                if (row) row.remove();
-
-                const top = document.querySelector(`.course-check[data-id="${id}"]`);
-                if (top) top.checked = false;
-            }
-        });
-
     });
-    
-</script>
-
-<script>
-    //display registed
-    function updateSummary() {
-    const rows = document.querySelectorAll("#registered-body tr");
-    const totalCourses = rows.length;
-
-    let totalCredits = 0;
-    rows.forEach(r => {
-        totalCredits += parseInt(r.children[5].innerText);
-    });
-
-    document.getElementById("total-summary").innerText =
-        `${totalCourses} môn, ${totalCredits} tín chỉ`;
-    }
-    //registed toogle
-    document.addEventListener("change", function (e) {
-        if (e.target.classList.contains("registered-check")) {
-            const id = e.target.dataset.id;
-
-            //uncheck top checkbox
-            const top = document.querySelector(`.course-check[data-id="${id}"]`);
-            if (top) top.checked = false;
-
-            // trigger change event 
-            top.dispatchEvent(new Event("change"));
-        }
-    });
-    
-    //post
-    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
-    document.querySelectorAll(".course-check").forEach(cb => {
-        cb.addEventListener("change", function () {
-
-            const classroomId = this.dataset.id; 
-            const isChecked = this.checked;        
-
-            console.log("Sending:", classroomId, isChecked);
-
-            fetch(`/Enroll/ToggleEnroll?classroomId=${classroomId}&isChecked=${isChecked}`, {
-                method: 'POST',
-                headers: {
-                    'RequestVerificationToken': token
-                }
-            })
-            .then(async res => {
-                if (!res.ok) {
-                    const text = await res.text();
-                    throw new Error(text);
-                }
-                alert("DKM ok!");
-                // ++ --
-                const row = cb.closest("tr");
-                const remainCell = row.children[6];
-
-                let remain = parseInt(remainCell.innerText);
-
-                if (isChecked) remain--;
-                else remain++;
-
-                remainCell.innerText = remain;
-            })
-            .catch(err => {
-                console.error(err);
-                alert("Fail when save");
-            });
-
-
-        });
-    });
-
-    //inti
-    window.onload = function () {
-        updateSummary();
-    };
 </script>

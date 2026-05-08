@@ -13,10 +13,10 @@ namespace ExtensionDKM.Controllers
     [Authorize(Roles ="Admin")]
     public class MajorsController : Controller
     {
-        private readonly IMajorService _majorService;
+        private readonly MajorService _majorService;
 
 
-        public MajorsController(IMajorService majorService)
+        public MajorsController(MajorService majorService)
         {
             _majorService = majorService;
         }

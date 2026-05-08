@@ -3,11 +3,11 @@ using ExtensionDKM.Models;
 
 namespace ExtensionDKM.BUS
 {
-    public class ClassroomService : IClassroomService
+    public class ClassroomService 
     {
-        private readonly IClassroomRepository _classroomRepository;
+        private readonly ClassroomRepository _classroomRepository;
 
-        public ClassroomService(IClassroomRepository classroomRepository)
+        public ClassroomService(ClassroomRepository classroomRepository)
         {
             _classroomRepository = classroomRepository;
         }
@@ -27,16 +27,18 @@ namespace ExtensionDKM.BUS
 
         public async Task<Classroom> CreateClassroomAsync(Classroom classroom)
         {
-            if (classroom == null)
-                throw new ArgumentNullException(nameof(classroom));
+            //if (classroom == null)
+            //    throw new ArgumentNullException(nameof(classroom));
+            ArgumentNullException.ThrowIfNull(classroom);
 
             return await _classroomRepository.CreateAsync(classroom);
         }
 
         public async Task<Classroom> UpdateClassroomAsync(Classroom classroom)
         {
-            if (classroom == null)
-                throw new ArgumentNullException(nameof(classroom));
+            //if (classroom == null)
+            //    throw new ArgumentNullException(nameof(classroom));
+            ArgumentNullException.ThrowIfNull(classroom);
 
             return await _classroomRepository.UpdateAsync(classroom);
         }

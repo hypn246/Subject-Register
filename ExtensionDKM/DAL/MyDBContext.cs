@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ExtensionDKM.Models;
 
-namespace ExtensionDKM.Data
+namespace ExtensionDKM.DAL
 {
     public class MyDBContext:DbContext
     {
@@ -16,7 +16,7 @@ namespace ExtensionDKM.Data
         public DbSet<Score> Scores{ get; set; }
         public DbSet<ScoreTable> ScoresTables{ get; set; }
         public DbSet<Classroom> Classrooms{ get; set; }
-        public DbSet<ExtensionDKM.Models.Room> Room { get; set; } = default!;
+        public DbSet<Room> Room { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

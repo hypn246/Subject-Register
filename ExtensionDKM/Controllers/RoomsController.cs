@@ -12,9 +12,9 @@ namespace ExtensionDKM.Controllers
 {
     public class RoomsController : Controller
     {
-        private readonly IRoomService _roomService;
+        private readonly RoomService _roomService;
 
-        public RoomsController(IRoomService roomService)
+        public RoomsController(RoomService roomService)
         {
             _roomService = roomService;
         }

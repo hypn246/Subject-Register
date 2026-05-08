@@ -1,4 +1,4 @@
-﻿using ExtensionDKM.Data;
+﻿using ExtensionDKM.DAL;
 using ExtensionDKM.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;

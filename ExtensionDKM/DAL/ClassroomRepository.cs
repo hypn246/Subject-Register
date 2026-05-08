@@ -1,10 +1,9 @@
-using ExtensionDKM.Data;
 using ExtensionDKM.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExtensionDKM.DAL
 {
-    public class ClassroomRepository : IClassroomRepository
+    public class ClassroomRepository 
     {
         private readonly MyDBContext _context;
 

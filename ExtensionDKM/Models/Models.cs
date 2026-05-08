@@ -106,7 +106,7 @@ namespace ExtensionDKM.Models
         [Key]
         public int Id { get; set; }
         public string? Name { get; set; }
-        public string? Capacity { get; set; }
+        public int? Capacity { get; set; }
         public List<Classroom> Classrooms { get; set; } = new();
     }
     public class Classroom

@@ -3,11 +3,11 @@ using ExtensionDKM.Models;
 
 namespace ExtensionDKM.BUS
 {
-    public class MajorService : IMajorService
+    public class MajorService 
     {
-        private readonly IMajorRepository _majorRepository;
+        private readonly MajorRepository _majorRepository;
 
-        public MajorService(IMajorRepository majorRepository)
+        public MajorService(MajorRepository majorRepository)
         {
             _majorRepository = majorRepository;
         }
