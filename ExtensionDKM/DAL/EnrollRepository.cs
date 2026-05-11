@@ -16,13 +16,13 @@ namespace ExtensionDKM.DAL
         }
 
         //GET
-        public async Task<List<ClassrommDTO>> GetAssignCourses(int userId)
+        public async Task<List<SubjectDTO>> GetAssignCourses(int userId)
         {
             var assignedClassroomIds = await _context.Assigns.Where(a => a.StudentId == userId)
                 .Select(a => a.ClassroomId)
                 .ToListAsync();
 
-            return await _context.Classrooms.Select(c => new ClassrommDTO
+            return await _context.Classrooms.Select(c => new SubjectDTO
             {
                 Id = c.Id,
                 Time = c.Time,

@@ -12,7 +12,7 @@ namespace ExtensionDKM.BUS
         {
             _enrollRepository = enrollRepository;
         }
-        public async Task<List<ClassrommDTO>> GetAssignCourses(int userId)
+        public async Task<List<SubjectDTO>> GetAssignCourses(int userId)
         {
 
             return await _enrollRepository.GetAssignCourses(userId);

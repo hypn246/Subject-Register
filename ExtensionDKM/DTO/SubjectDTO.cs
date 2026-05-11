@@ -3,7 +3,7 @@ using ExtensionDKM.Models;
 
 namespace ExtensionDKM.DTO
 {
-    public class ClassrommDTO
+    public class SubjectDTO
     {
         public int Id { get; set; }
         public int? Time { get; set; }
