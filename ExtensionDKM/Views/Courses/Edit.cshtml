@@ -1,133 +1,132 @@
 ﻿@model ExtensionDKM.Models.Course
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Chỉnh sửa Học phần";
 }
 
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-dark text-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-book me-2"></i>Thông tin Học phần</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Edit" id="mainForm">
+                        <div asp-validation-summary="ModelOnly" class="text-danger small"></div>
+                        <input type="hidden" asp-for="Id" />
 
-<h1>Edit</h1>
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-bold"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
 
-<h4>Course</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                        <div class="mb-3">
+                            <label asp-for="MajorId" class="form-label fw-bold">Chuyên ngành</label>
+                            <select asp-for="MajorId" class="form-select" asp-items="ViewBag.Majors">
+                                <option value="">-- Chọn chuyên ngành --</option>
+                            </select>
+                            <span asp-validation-for="MajorId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <label asp-for="Credit" class="form-label fw-bold">Số tín chỉ</label>
+                                <input asp-for="Credit" class="form-control" />
+                                <span asp-validation-for="Credit" class="text-danger small"></span>
+                            </div>
+                            <div class="col-6">
+                                <label asp-for="Tuition" class="form-label fw-bold">Học phí</label>
+                                <input asp-for="Tuition" class="form-control" />
+                                <span asp-validation-for="Tuition" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg shadow-sm">
+                                <i class="fas fa-check-circle me-2"></i> Lưu thay đổi
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">Hủy bỏ</a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="MajorId" class="control-label"></label>
-                <select asp-for="MajorId" asp-items="ViewBag.Majors">
-                    <option value="">-- Select Major --</option>
-                </select>
-                <span asp-validation-for="MajorId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Credit" class="control-label"></label>
-                <input asp-for="Credit" class="form-control" />
-                <span asp-validation-for="Credit" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Tuition" class="control-label"></label>
-                <input asp-for="Tuition" class="form-control" />
-                <span asp-validation-for="Tuition" class="text-danger"></span>
-            </div>
+        </div>
 
-            <div class="form-group">
-                <label>Previous Courses</label>
-
-                <div class="row">
-                    <!-- Available -->
-                    <div class="col-md-5">
-                        <select id="availableCourses" class="form-control" multiple size="10">
-                            @foreach (var item in ViewBag.PreviousCourses)
-                            {
-                                if (!item.Selected)
-                                {
-                                    <option value="@item.Value">@item.Text</option>
-                                }
-                            }
-                        </select>
-                    </div>
-
-                    <!-- Buttons -->
-                    <div class="col-md-2 text-center d-flex flex-column justify-content-center">
-                        <button type="button" id="addBtn" class="btn btn-primary mb-2">>></button>
-                        <button type="button" id="removeBtn" class="btn btn-secondary"><<</button>
-                    </div>
-
-                    <!-- Selected -->
-                    <div class="col-md-5">
-                        <select id="selectedCourses" name="PreviousCourseIds" class="form-control" multiple size="10">
-                            @foreach (var item in ViewBag.PreviousCourses)
-                            {
-                                if (item.Selected)
-                                {
-                                    <option value="@item.Value">@item.Text</option>
-                                }
-                            }
-                        </select>
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-primary text-white py-2">
+                    <span class="small fw-bold text-uppercase">1. Học phần tiên quyết (Previous Courses)</span>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-5">
+                            <label class="small text-muted fw-bold">Dòng sẵn có</label>
+                            <select id="availableCourses" class="form-select" multiple size="8">
+                                @foreach (var item in ViewBag.PreviousCourses) { if (!item.Selected) { <option value="@item.Value">@item.Text</option> } }
+                            </select>
+                        </div>
+                        <div class="col-md-2 text-center py-3">
+                            <div class="btn-group-vertical w-100">
+                                <button type="button" id="addBtn" class="btn btn-outline-primary mb-1 shadow-sm">Thêm <i class="fas fa-angle-right"></i></button>
+                                <button type="button" id="removeBtn" class="btn btn-outline-danger shadow-sm"><i class="fas fa-angle-left"></i> Gỡ</button>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="small text-primary fw-bold">Đã chọn</label>
+                            <select id="selectedCourses" name="PreviousCourseIds" class="form-select border-primary" multiple size="8" form="mainForm">
+                                @foreach (var item in ViewBag.PreviousCourses) { if (item.Selected) { <option value="@item.Value">@item.Text</option> } }
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <label>Requirement Courses</label>
 
-                <div class="row">
-                    <!-- Available -->
-                    <div class="col-md-5">
-                        <select id="availableRequirementCourses" class="form-control" multiple size="10">
-                            @foreach (var item in ViewBag.RequirementCourses)
-                            {
-                                if (!item.Selected)
-                                {
-                                    <option value="@item.Value">@item.Text</option>
-                                }
-                            }
-                        </select>
-                    </div>
-
-                    <!-- Buttons -->
-                    <div class="col-md-2 text-center d-flex flex-column justify-content-center">
-                        <button type="button" id="addReqBtn" class="btn btn-primary mb-2">>></button>
-                        <button type="button" id="removeReqBtn" class="btn btn-secondary"><<</button>
-                    </div>
-
-                    <!-- Selected -->
-                    <div class="col-md-5">
-                        <select id="selectedRequirementCourses" name="RequirementCourseIds" class="form-control" multiple size="10">
-                            @foreach (var item in ViewBag.RequirementCourses)
-                            {
-                                if (item.Selected)
-                                {
-                                    <option value="@item.Value">@item.Text</option>
-                                }
-                            }
-                        </select>
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-info text-white py-2">
+                    <span class="small fw-bold text-uppercase">2. Học phần bắt buộc (Requirement Courses)</span>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-5">
+                            <label class="small text-muted fw-bold">Dòng sẵn có</label>
+                            <select id="availableRequirementCourses" class="form-select" multiple size="8">
+                                @foreach (var item in ViewBag.RequirementCourses) { if (!item.Selected) { <option value="@item.Value">@item.Text</option> } }
+                            </select>
+                        </div>
+                        <div class="col-md-2 text-center py-3">
+                            <div class="btn-group-vertical w-100">
+                                <button type="button" id="addReqBtn" class="btn btn-outline-info mb-1 shadow-sm">Thêm <i class="fas fa-angle-right"></i></button>
+                                <button type="button" id="removeReqBtn" class="btn btn-outline-danger shadow-sm"><i class="fas fa-angle-left"></i> Gỡ</button>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="small text-info fw-bold">Đã chọn</label>
+                            <select id="selectedRequirementCourses" name="RequirementCourseIds" class="form-select border-info" multiple size="8" form="mainForm">
+                                @foreach (var item in ViewBag.RequirementCourses) { if (item.Selected) { <option value="@item.Value">@item.Text</option> } }
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<style>
+    .form-select[multiple] { height: 220px; font-size: 0.9rem; }
+    .form-select[multiple] option { padding: 6px 10px; border-bottom: 1px solid #f1f1f1; }
+    .btn-group-vertical .btn { font-weight: bold; }
+</style>
 
 @section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <script>
+        // GIỮ NGUYÊN 100% LOGIC JS CỦA BẠN
         function setupDualList(availableId, selectedId, addBtnId, removeBtnId) {
             const available = document.getElementById(availableId);
             const selected = document.getElementById(selectedId);
-
             document.getElementById(addBtnId).onclick = () => move(available, selected);
             document.getElementById(removeBtnId).onclick = () => move(selected, available);
         }
@@ -138,20 +137,13 @@
             });
         }
 
-        // Setup BOTH lists
         setupDualList("availableCourses", "selectedCourses", "addBtn", "removeBtn");
         setupDualList("availableRequirementCourses", "selectedRequirementCourses", "addReqBtn", "removeReqBtn");
 
-        // Submit handler
-        document.querySelector("form").addEventListener("submit", function() {
-
-            // Previous
-            Array.from(document.getElementById("selectedCourses").options)
-                .forEach(o => o.selected = true);
-
-            // Requirement
-            Array.from(document.getElementById("selectedRequirementCourses").options)
-                .forEach(o => o.selected = true);
+        document.getElementById("mainForm").addEventListener("submit", function() {
+            Array.from(document.getElementById("selectedCourses").options).forEach(o => o.selected = true);
+            Array.from(document.getElementById("selectedRequirementCourses").options).forEach(o => o.selected = true);
         });
     </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
