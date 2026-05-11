@@ -1,9 +1,45 @@
-﻿@model IEnumerable<ExtensionDKM.DTO.ScheduleDTO> 
+﻿@model List<ExtensionDKM.DTO.ScheduleDTO>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Schedule";
 }
+@* ĐỌC CÁI NÀY TRC KHI LÀM :) *@
+<h1>Schedule</h1>
 
-<h1>Index</h1>
+@* Đây là code mẫu, đừng làm kiểm bảng này, làm j đó dẽ minh họa hơn đi *@
+@* Trường nào ko cần thì thôi không cần làm. Với lại có cái học kì đó mà canh cho lịch ko vượt quá ngày trong học kì *@
+@* theo code t thì:        
+// Jan-Apr  => Semester 2
+// May-Aug  => Semester 3
+// Sep-Dec  => Semester 1
+//line 200 .\Views\Classrooms\Create.cshtml
+nếu muốn sửa phải sửa trong code file đó, nhưng lậy bố sửa số thôi nha đừng sửa logic nổ máy con *@
 
-<h2>TKB</h2>
+@* Có thể dùng C# logic hoặc JS thêm cho *@
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Course ID</th>
+            <th>Course Name</th>
+            <th>Lecturer</th>
+            <th>Room</th>
+            <th>Time</th>
+            <th>School Year</th>
+            <th>Semester</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.CourseId</td>
+                <td>@item.CourseName</td>
+                <td>@item.LecturerName</td>
+                <td>@item.RoomName</td>
+                <td>@item.Time</td>
+                <td>@item.SchoolYear</td>
+                <td>@item.Semester</td>
+            </tr>
+        }
+    </tbody>
+</table>
