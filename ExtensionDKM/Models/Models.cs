@@ -54,8 +54,8 @@ namespace ExtensionDKM.Models
         public int StudentId { get; set; }
         public Student? Student { get; set; }
 
-        public int CourseId { get; set; }
-        public Course? Course { get; set; }
+        public int ClassroomId { get; set; } 
+        public Classroom? Classroom { get; set; }
 
         // results in a Score
         public int? ScoreId { get; set; }
@@ -106,7 +106,7 @@ namespace ExtensionDKM.Models
         [Key]
         public int Id { get; set; }
         public string? Name { get; set; }
-        public string? Capacity { get; set; }
+        public int? Capacity { get; set; }
         public List<Classroom> Classrooms { get; set; } = new();
     }
     public class Classroom
@@ -119,12 +119,15 @@ namespace ExtensionDKM.Models
         public int SchoolYear { get; set; }
         public int Semester { get; set; }
         public int SS { get; set; }
+
         public int LecturerId { get; set; }
         public User? Lecturer { get; set; }
 
         // Teaches 1 Course
         public int CourseId { get; set; }
         public Course? Course { get; set; }
+
+        public List<Assign> Assignments { get; set; } = new();
     }
 
     public class ScoreTable

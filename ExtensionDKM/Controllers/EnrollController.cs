@@ -1,10 +1,12 @@
-﻿using ExtensionDKM.Data;
+﻿using ExtensionDKM.BUS;
+using ExtensionDKM.DAL;
+using ExtensionDKM.DTO;
 using ExtensionDKM.DTOs;
 using ExtensionDKM.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace ExtensionDKM.Controllers
 {
@@ -12,46 +14,36 @@ namespace ExtensionDKM.Controllers
     [Authorize(Roles = "Student")]
     public class EnrollController:Controller
     {
-        private readonly MyDBContext _context;
-        public EnrollController(MyDBContext context)
+        private readonly EnrollServices _enrollService;
+
+        public EnrollController(EnrollServices enrollService)
         {
-            _context = context;
+            _enrollService = enrollService;
         }
         public async Task<IActionResult> Index()
         {
-            //var classrooms = await _context.Classrooms
-            //    .AsSplitQuery()
-            //    .Include(c => c.Course)
-            //        .ThenInclude(c => c.PreviousCourses)
-            //    .Include(c => c.Course)
-            //        .ThenInclude(c => c.RequirementCourses)
-            //    .Include(c => c.Lecturer)
-            //    .Include(c => c.Room)
-            //    .ToListAsync();
-            IEnumerable<ClassrommDTO> classrooms = await _context.Classrooms
-                .Select(c => new ClassrommDTO
-                {
-                    Id = c.Id,
-                    Time = c.Time,
-                    SchoolYear = c.SchoolYear,
-                    Semester = c.Semester,
-                    SS = c.SS,
-
-                    CourseName = c.Course.Name,
-                    LecturerName = c.Lecturer.Name,
-                    RoomName = c.Room.Name,
-
-                    PreviousCourses = c.Course.PreviousCourses
-                .Select(x => x.PreviousCourse.Name)
-                .ToList(),
-
-                    RequirementCourses = c.Course.RequirementCourses
-                .Select(x => x.RequirementCourse.Name)
-                .ToList()
-                })
-                .ToListAsync();
+            int userId = int.Parse(User.FindFirst("UserId")?.Value);
+ 
+            var classrooms= await _enrollService.GetAssignCourses(userId);
 
             return View(classrooms);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleEnroll(int classroomId, bool isChecked)
+        {
+            int _userId = int.Parse(User.FindFirstValue("UserId"));
+            int statusCode= await _enrollService.ToggleEnroll(classroomId:classroomId,isChecked:isChecked, userId:_userId);
+            switch (statusCode)
+            { 
+                case 200:
+                    return Ok();
+                case 404:
+                    return BadRequest();
+                default: return StatusCode(statusCode);
+            }
+        }
+
     }
 }

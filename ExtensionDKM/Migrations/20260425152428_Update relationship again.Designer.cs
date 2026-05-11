@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExtensionDKM.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    [Migration("20260425133759_Update relationship")]
-    partial class Updaterelationship
+    [Migration("20260425152428_Update relationship again")]
+    partial class Updaterelationshipagain
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,7 +32,10 @@ namespace ExtensionDKM.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CourseId")
+                    b.Property<int>("ClassroomId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CourseId")
                         .HasColumnType("int");
 
                     b.Property<int?>("ScoreId")
@@ -42,6 +45,8 @@ namespace ExtensionDKM.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClassroomId");
 
                     b.HasIndex("CourseId");
 
@@ -298,11 +303,15 @@ namespace ExtensionDKM.Migrations
 
             modelBuilder.Entity("ExtensionDKM.Models.Assign", b =>
                 {
-                    b.HasOne("ExtensionDKM.Models.Course", "Course")
+                    b.HasOne("ExtensionDKM.Models.Classroom", "Classroom")
                         .WithMany("Assignments")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("ClassroomId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("ExtensionDKM.Models.Course", null)
+                        .WithMany("Assignments")
+                        .HasForeignKey("CourseId");
 
                     b.HasOne("ExtensionDKM.Models.Student", "Student")
                         .WithMany("Assignments")
@@ -310,7 +319,7 @@ namespace ExtensionDKM.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Course");
+                    b.Navigation("Classroom");
 
                     b.Navigation("Student");
                 });
@@ -431,6 +440,11 @@ namespace ExtensionDKM.Migrations
             modelBuilder.Entity("ExtensionDKM.Models.Assign", b =>
                 {
                     b.Navigation("Score");
+                });
+
+            modelBuilder.Entity("ExtensionDKM.Models.Classroom", b =>
+                {
+                    b.Navigation("Assignments");
                 });
 
             modelBuilder.Entity("ExtensionDKM.Models.Course", b =>

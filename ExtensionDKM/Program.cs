@@ -1,14 +1,32 @@
-using ExtensionDKM.Data;
+using ExtensionDKM.DAL;
+using ExtensionDKM.BUS;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+//services
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<MyDBContext>(options
-    =>options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
 
+//dbContext
+builder.Services.AddDbContext<MyDBContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
+
+//DAL
+builder.Services.AddScoped<CourseRepository, CourseRepository>();
+builder.Services.AddScoped<MajorRepository, MajorRepository>();
+builder.Services.AddScoped<ClassroomRepository, ClassroomRepository>();
+builder.Services.AddScoped<RoomRepository, RoomRepository>();
+builder.Services.AddScoped<EnrollRepository>();
+
+//BUS
+builder.Services.AddScoped<CourseService, CourseService>();
+builder.Services.AddScoped<MajorService, MajorService>();
+builder.Services.AddScoped<ClassroomService, ClassroomService>();
+builder.Services.AddScoped<RoomService, RoomService>();
+builder.Services.AddScoped<EnrollServices>();
+
+// Add authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {

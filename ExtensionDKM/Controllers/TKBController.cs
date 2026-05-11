@@ -1,4 +1,4 @@
-﻿using ExtensionDKM.Data;
+﻿using ExtensionDKM.DAL;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;

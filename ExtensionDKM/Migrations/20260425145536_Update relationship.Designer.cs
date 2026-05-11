@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExtensionDKM.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    [Migration("20260425133759_Update relationship")]
+    [Migration("20260425145536_Update relationship")]
     partial class Updaterelationship
     {
         /// <inheritdoc />
@@ -32,6 +32,9 @@ namespace ExtensionDKM.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ClassroomId")
+                        .HasColumnType("int");
+
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
@@ -42,6 +45,8 @@ namespace ExtensionDKM.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClassroomId");
 
                     b.HasIndex("CourseId");
 
@@ -298,6 +303,12 @@ namespace ExtensionDKM.Migrations
 
             modelBuilder.Entity("ExtensionDKM.Models.Assign", b =>
                 {
+                    b.HasOne("ExtensionDKM.Models.Classroom", "Classroom")
+                        .WithMany()
+                        .HasForeignKey("ClassroomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ExtensionDKM.Models.Course", "Course")
                         .WithMany("Assignments")
                         .HasForeignKey("CourseId")
@@ -309,6 +320,8 @@ namespace ExtensionDKM.Migrations
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("Classroom");
 
                     b.Navigation("Course");
 
