@@ -64,31 +64,48 @@ namespace ExtensionDKM.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string Semester, [Bind("Id,Time,RoomId,SchoolYear,SS,LecturerId,CourseId")] Classroom classroom)
-        {
+        public async Task<IActionResult> Create([Bind("Id,Time,RoomId,SchoolYear,SS,LecturerId,CourseId")] Classroom classroom)
+        { 
             var conflict = await _context.Classrooms.FirstOrDefaultAsync(c =>
                 c.LecturerId == classroom.LecturerId &&
                 c.SchoolYear == classroom.SchoolYear &&
                 c.Semester == classroom.Semester &&
                 c.Time == classroom.Time
             );
-            if (conflict != null) { 
+
+            if (conflict != null)
+            {
                 if (conflict.CourseId == classroom.CourseId)
-                    {
-                        ModelState.AddModelError("", "You already have teach this course at this time.");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "You already has another course at this time");
-                    }
+                {
+                    ModelState.AddModelError("",
+                        "You already teach this course at this time.");
+                }
+                else
+                {
+                    ModelState.AddModelError("",
+                        "You already have another course at this time.");
+                }
             }
 
             if (ModelState.IsValid)
             {
-                classroom.Semester = int.Parse(Semester);
                 await _classroomService.CreateClassroomAsync(classroom);
                 return RedirectToAction(nameof(Index));
             }
+
+            // RELOAD VIEW DATA
+            var lecturers = await _context.Users
+                .Where(u => u.Role == UserRole.Lecturer)
+                .ToListAsync();
+
+            ViewData["LecturerId"] =
+                new SelectList(lecturers, "Id", "Name", classroom.LecturerId);
+
+            ViewData["CourseId"] =
+                new SelectList(_context.Courses, "Id", "Name", classroom.CourseId);
+
+            ViewBag.Rooms = await _context.Room.ToListAsync();
+
             return View(classroom);
         }
 

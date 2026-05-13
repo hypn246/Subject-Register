@@ -182,9 +182,8 @@
     </style>
 }
 <script>
-
     document.addEventListener("DOMContentLoaded", function () {
-        // SEMESTER + YEAR
+
         const now = new Date();
 
         const month = now.getMonth() + 1;
@@ -202,24 +201,24 @@
         // May-Aug  => Semester 3
         // Sep-Dec  => Semester 1
 
-        if (month >= 1 && month <= 4)
-        {
+        if (month >= 1 && month <= 4) {
             semester = 2;
         }
-        else if (month >= 5 && month <= 8)
-        {
+        else if (month >= 5 && month <= 8) {
             semester = 3;
         }
-        else
-        {
+        else {
             semester = 1;
         }
-        semesterSelect.value = semester; 
-        semesterSelect.disabled=true;
+
+        semesterSelect.value = semester;
+
+        // visually lock select
+        semesterSelect.style.pointerEvents = "none";
+        semesterSelect.style.backgroundColor = "#e9ecef";
 
         schoolYearInput.value = year;
-        schoolYearInput.disabled=true;
-
+        schoolYearInput.readOnly = true;
     });
 </script>
 <script>
