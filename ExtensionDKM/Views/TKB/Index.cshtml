@@ -1,45 +1,377 @@
 ﻿@model List<ExtensionDKM.DTO.ScheduleDTO>
 
 @{
-    ViewData["Title"] = "Schedule";
+    ViewData["Title"] = "Thời Khóa Biểu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int ParseThu(int? t)    => t.HasValue ? t.Value / 100        : 0;
+    int ParseTietBD(int? t) => t.HasValue ? (t.Value % 100) / 10 : 0;
+    int ParseTietKT(int? t) => t.HasValue ? t.Value % 10         : 0;
+
+    string ThuLabel(int thu) => thu switch {
+        2=>"Thứ 2", 3=>"Thứ 3", 4=>"Thứ 4",
+        5=>"Thứ 5", 6=>"Thứ 6", 7=>"Thứ 7",
+        8=>"Chủ Nhật", _=>"?"
+    };
+
+    ExtensionDKM.DTO.ScheduleDTO? GetLich(int thu, int tiet) =>
+        Model.FirstOrDefault(s =>
+            ParseThu(s.Time)    == thu  &&
+            ParseTietBD(s.Time) <= tiet &&
+            ParseTietKT(s.Time) >= tiet);
+
+    bool IsTietBD(int thu, int tiet) {
+        var s = GetLich(thu, tiet);
+        return s != null && ParseTietBD(s.Time) == tiet;
+    }
+
+    int GetRowspan(ExtensionDKM.DTO.ScheduleDTO s) =>
+        Math.Max(1, ParseTietKT(s.Time) - ParseTietBD(s.Time) + 1);
+
+    int GetColor(int courseId) => (courseId % 7) + 1;
+
+    var tietGio = new Dictionary<int, string> {
+        {1,"07:00–07:50"},{2,"07:50–08:40"},{3,"08:50–09:40"},
+        {4,"09:40–10:30"},{5,"10:30–11:20"},{6,"11:20–12:10"},
+        {7,"12:30–13:20"},{8,"13:20–14:10"},{9,"14:10–15:00"},
+        {10,"15:10–16:00"}
+    };
+
+    var thuList  = new[] { 2, 3, 4, 5, 6, 7, 8 };
+    var tietList = Enumerable.Range(1, 10).ToList();
+
+    int tongMon  = Model?.Select(x => x.CourseId).Distinct().Count() ?? 0;
+    int tongTiet = Model?.Sum(x => {
+        var bd = ParseTietBD(x.Time); var kt = ParseTietKT(x.Time);
+        return (bd > 0 && kt >= bd) ? kt - bd + 1 : 0;
+    }) ?? 0;
 }
-@* ĐỌC CÁI NÀY TRC KHI LÀM :) *@
-<h1>Schedule</h1>
 
-@* Đây là code mẫu, đừng làm kiểm bảng này, làm j đó dẽ minh họa hơn đi *@
-@* Trường nào ko cần thì thôi không cần làm. Với lại có cái học kì đó mà canh cho lịch ko vượt quá ngày trong học kì *@
-@* theo code t thì:        
-// Jan-Apr  => Semester 2
-// May-Aug  => Semester 3
-// Sep-Dec  => Semester 1
-//line 200 .\Views\Classrooms\Create.cshtml
-nếu muốn sửa phải sửa trong code file đó, nhưng lậy bố sửa số thôi nha đừng sửa logic nổ máy con *@
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
 
-@* Có thể dùng C# logic hoặc JS thêm cho *@
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Course ID</th>
-            <th>Course Name</th>
-            <th>Lecturer</th>
-            <th>Room</th>
-            <th>Time</th>
-            <th>School Year</th>
-            <th>Semester</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.CourseId</td>
-                <td>@item.CourseName</td>
-                <td>@item.LecturerName</td>
-                <td>@item.RoomName</td>
-                <td>@item.Time</td>
-                <td>@item.SchoolYear</td>
-                <td>@item.Semester</td>
-            </tr>
-        }
-    </tbody>
-</table>
+    .tkb-page *, .tkb-page *::before, .tkb-page *::after { box-sizing: border-box; }
+    .tkb-page { font-family: 'Be Vietnam Pro', sans-serif; }
+
+    /* ── Header ── */
+    .tkb-hdr {
+        background: linear-gradient(130deg, #0f3460 0%, #1a5fa8 100%);
+        border-radius: 12px; padding: 20px 24px; margin-bottom: 14px;
+        display: flex; align-items: center; justify-content: space-between;
+    }
+    .tkb-hdr h2 {
+        color: #fff; font-size: 1.2rem; font-weight: 700;
+        margin: 0; display: flex; align-items: center; gap: 8px;
+    }
+    .tkb-btn-print {
+        background: rgba(255,255,255,.15); color: #fff;
+        border: 1px solid rgba(255,255,255,.35); border-radius: 7px;
+        padding: 7px 14px; font-size: .8rem; font-weight: 600;
+        cursor: pointer; display: flex; align-items: center; gap: 5px;
+        font-family: 'Be Vietnam Pro', sans-serif; transition: background .2s;
+    }
+    .tkb-btn-print:hover { background: rgba(255,255,255,.26); }
+
+    /* ── Table wrapper ── */
+    .tkb-wrap {
+        background: #fff; border: 0.5px solid #dde4ef;
+        border-radius: 10px; overflow: hidden; margin-bottom: 14px;
+    }
+    .tkb-scroll { overflow-x: auto; }
+
+    /* ── Table ── */
+    .tkb-tbl { width: 100%; border-collapse: collapse; font-size: .78rem; }
+    .tkb-tbl thead th {
+        background: #0f3460; color: #fff; padding: 10px 7px;
+        text-align: center; font-weight: 600; font-size: .74rem;
+        letter-spacing: .4px; border-right: 1px solid rgba(255,255,255,.1);
+        white-space: nowrap; position: sticky; top: 0; z-index: 2;
+    }
+    .tkb-tbl thead th:first-child { background: #0a2744; min-width: 80px; font-size: .72rem; }
+    .tkb-col-day { min-width: 110px; }
+
+    .tkb-tbl tbody td {
+        border: 1px solid #dde4ef; vertical-align: top; padding: 3px; height: 60px;
+    }
+    .tkb-tiet-lbl {
+        background: #eaf0f9 !important; text-align: center;
+        vertical-align: middle !important; font-weight: 700;
+        color: #0f3460; font-size: .77rem;
+        padding: 5px 3px !important; border-right: 2px solid #1a5fa8 !important;
+        white-space: nowrap;
+    }
+    .tkb-tiet-lbl small {
+        display: block; font-size: .61rem; font-weight: 400;
+        color: #677489; margin-top: 2px;
+    }
+    .tkb-tbl tbody tr:nth-child(even) td:not(.tkb-tiet-lbl) { background: #f8fafd; }
+
+    /* ── Card môn ── */
+    .tkb-card {
+        border-radius: 7px; padding: 5px 8px 5px 11px;
+        height: 100%; min-height: 54px;
+        display: flex; flex-direction: column; justify-content: space-between;
+        cursor: pointer; position: relative; overflow: hidden;
+        transition: transform .15s, filter .15s;
+    }
+    .tkb-card:hover { transform: scale(1.03); filter: brightness(1.04); }
+    .tkb-card::before {
+        content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+        width: 4px; border-radius: 7px 0 0 7px;
+    }
+    .tkb-c1 { background: #dbeafe; } .tkb-c1::before { background: #2563eb; }
+    .tkb-c2 { background: #d1fae5; } .tkb-c2::before { background: #059669; }
+    .tkb-c3 { background: #fef3c7; } .tkb-c3::before { background: #d97706; }
+    .tkb-c4 { background: #fce7f3; } .tkb-c4::before { background: #db2777; }
+    .tkb-c5 { background: #ede9fe; } .tkb-c5::before { background: #7c3aed; }
+    .tkb-c6 { background: #ffedd5; } .tkb-c6::before { background: #ea580c; }
+    .tkb-c7 { background: #cffafe; } .tkb-c7::before { background: #0891b2; }
+
+    .tkb-mon-ten {
+        font-weight: 700; font-size: .74rem; color: #1a2333;
+        line-height: 1.25; margin-bottom: 2px; padding-right: 24px;
+    }
+    .tkb-mon-meta {
+        font-size: .65rem; color: #677489;
+        display: flex; flex-direction: column; gap: 1px;
+    }
+    .tkb-mon-meta i { margin-right: 3px; }
+    .tkb-badge-tiet {
+        position: absolute; top: 3px; right: 4px;
+        background: rgba(0,0,0,.08); border-radius: 4px;
+        font-size: .6rem; font-weight: 700;
+        padding: 1px 4px; color: #1a2333; white-space: nowrap;
+    }
+
+    /* ── Summary ── */
+    .tkb-sum-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .tkb-sc {
+        flex: 1 1 140px; background: #fff;
+        border: 0.5px solid #dde4ef; border-radius: 10px;
+        padding: 13px 16px; border-left: 3px solid #1a5fa8;
+    }
+    .tkb-sc.acc { border-left-color: #d97706; }
+    .tkb-sc .num { font-size: 1.8rem; font-weight: 700; color: #0f3460; line-height: 1; }
+    .tkb-sc.acc .num { color: #9a6000; }
+    .tkb-sc .lbl { font-size: .74rem; color: #677489; margin-top: 4px; }
+
+    /* ── Empty ── */
+    .tkb-empty { text-align: center; padding: 60px 20px; color: #677489; }
+    .tkb-empty i { font-size: 2.8rem; display: block; margin-bottom: 12px; opacity: .3; }
+    .tkb-empty p { font-size: .9rem; line-height: 1.6; }
+
+    /* ── Modal ── */
+    .tkb-modal-bg {
+        display: none; position: fixed; inset: 0;
+        background: rgba(10,30,60,.5); z-index: 1080;
+        align-items: center; justify-content: center;
+    }
+    .tkb-modal-bg.show { display: flex; }
+    .tkb-modal-box {
+        background: #fff; border-radius: 12px;
+        width: 400px; max-width: 95vw;
+        border: 0.5px solid #b0bad0;
+        animation: tkbIn .22s cubic-bezier(.34,1.3,.64,1);
+    }
+    @@keyframes tkbIn {
+        from { transform: scale(.9) translateY(10px); opacity: 0; }
+        to   { transform: scale(1)  translateY(0);    opacity: 1; }
+    }
+    .tkb-modal-hd {
+        padding: 16px 20px 12px; border-bottom: 0.5px solid #dde4ef;
+        display: flex; align-items: center; justify-content: space-between;
+    }
+    .tkb-modal-hd h5 { margin: 0; font-size: .95rem; font-weight: 700; color: #0f3460; }
+    .tkb-modal-close {
+        border: none; background: none; font-size: 1.2rem;
+        cursor: pointer; color: #677489; line-height: 1; transition: color .15s;
+    }
+    .tkb-modal-close:hover { color: #c0392b; }
+    .tkb-modal-bd { padding: 16px 20px 20px; }
+    .tkb-modal-bd dl {
+        display: grid; grid-template-columns: 105px 1fr;
+        gap: 9px 8px; margin: 0; font-size: .85rem;
+    }
+    .tkb-modal-bd dt { font-weight: 600; color: #677489; }
+    .tkb-modal-bd dd { margin: 0; color: #1a2333; font-weight: 500; }
+    .tkb-modal-bd hr { border: none; border-top: 0.5px solid #dde4ef; grid-column: 1/-1; margin: 2px 0; }
+
+    /* ── Responsive ── */
+    @@media (max-width: 768px) {
+        .tkb-tbl    { font-size: .7rem; }
+        .tkb-col-day { min-width: 88px; }
+        .tkb-hdr     { flex-direction: column; align-items: flex-start; gap: 10px; }
+    }
+
+    /* ── Print ── */
+    @@media print {
+        .tkb-btn-print, .tkb-modal-bg, .tkb-sum-row { display: none !important; }
+        .tkb-wrap { box-shadow: none; border: 1px solid #ccc; }
+    }
+</style>
+
+<div class="tkb-page container-fluid px-3 py-3">
+
+    {{-- ── Header ── --}}
+    <div class="tkb-hdr">
+        <h2>
+            <i class="fas fa-calendar-week"></i>
+            Thời Khóa Biểu
+        </h2>
+        <button class="tkb-btn-print" onclick="window.print()">
+            <i class="fas fa-print"></i> In TKB
+        </button>
+    </div>
+
+    {{-- ── Timetable ── --}}
+    @if (Model != null && Model.Any())
+    {
+        <div class="tkb-wrap">
+            <div class="tkb-scroll">
+                <table class="tkb-tbl">
+                    <thead>
+                        <tr>
+                            <th>Tiết / Giờ</th>
+                            @foreach (var thu in thuList)
+                            {
+                                <th class="tkb-col-day">@ThuLabel(thu)</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var rendered = new HashSet<string>();
+                        }
+                        @foreach (var tiet in tietList)
+                        {
+                            <tr>
+                                <td class="tkb-tiet-lbl">
+                                    <strong>Tiết @tiet</strong>
+                                    @if (tietGio.TryGetValue(tiet, out var gio))
+                                    {
+                                        <small>@gio</small>
+                                    }
+                                </td>
+
+                                @foreach (var thu in thuList)
+                                {
+                                    var cellKey = $"{thu}-{tiet}";
+                                    if (rendered.Contains(cellKey)) { continue; }
+
+                                    var lich = GetLich(thu, tiet);
+
+                                    if (lich == null)
+                                    {
+                                        <td></td>
+                                    }
+                                    else if (IsTietBD(thu, tiet))
+                                    {
+                                        var rs  = GetRowspan(lich);
+                                        var col = GetColor(lich.CourseId);
+                                        var bd  = ParseTietBD(lich.Time);
+                                        var kt  = ParseTietKT(lich.Time);
+
+                                        for (int r = 1; r < rs; r++)
+                                        {
+                                            rendered.Add($"{thu}-{tiet + r}");
+                                        }
+
+                                        var json = System.Text.Json.JsonSerializer.Serialize(lich,
+                                            new System.Text.Json.JsonSerializerOptions {
+                                                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+                                            });
+
+                                        <td rowspan="@rs" style="vertical-align:top; padding:3px;">
+                                            <div class="tkb-card tkb-c@col"
+                                                 onclick='tkbShowDetail(@Html.Raw(json))'>
+                                                <span class="tkb-badge-tiet">@bd–@kt</span>
+                                                <div class="tkb-mon-ten">@lich.CourseName</div>
+                                                <div class="tkb-mon-meta">
+                                                    <span><i class="fas fa-door-open"></i>@lich.RoomName</span>
+                                                    <span><i class="fas fa-chalkboard-teacher"></i>@lich.LecturerName</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    }
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tkb-sum-row">
+            <div class="tkb-sc">
+                <div class="num">@tongMon</div>
+                <div class="lbl"><i class="fas fa-book me-1"></i>Số môn học</div>
+            </div>
+            <div class="tkb-sc acc">
+                <div class="num">@tongTiet</div>
+                <div class="lbl"><i class="fas fa-clock me-1"></i>Tổng số tiết</div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="tkb-wrap">
+            <div class="tkb-empty">
+                <i class="fas fa-calendar-times"></i>
+                <p>Bạn chưa đăng ký môn học nào.</p>
+            </div>
+        </div>
+    }
+
+</div>
+
+{{-- ── Modal chi tiết ── --}}
+<div class="tkb-modal-bg" id="tkbModalBg" onclick="tkbOverlayClick(event)">
+    <div class="tkb-modal-box">
+        <div class="tkb-modal-hd">
+            <h5 id="tkbMTitle">Chi tiết lịch học</h5>
+            <button class="tkb-modal-close" onclick="tkbCloseModal()">&#x2715;</button>
+        </div>
+        <div class="tkb-modal-bd">
+            <dl id="tkbMContent"></dl>
+        </div>
+    </div>
+</div>
+
+<script>
+    const tkbThuMap = {
+        2: 'Thứ 2', 3: 'Thứ 3', 4: 'Thứ 4',
+        5: 'Thứ 5', 6: 'Thứ 6', 7: 'Thứ 7', 8: 'Chủ Nhật'
+    };
+
+    function tkbParseTime(t) {
+        if (!t) return { thu: 0, bd: 0, kt: 0 };
+        return { thu: Math.floor(t / 100), bd: Math.floor((t % 100) / 10), kt: t % 10 };
+    }
+
+    function tkbShowDetail(item) {
+        const p = tkbParseTime(item.time);
+        document.getElementById('tkbMTitle').textContent = item.courseName ?? 'Chi tiết lịch học';
+        document.getElementById('tkbMContent').innerHTML = `
+            <dt>Tên môn</dt>    <dd>${item.courseName   ?? '—'}</dd>
+            <hr>
+            <dt>Giảng viên</dt> <dd>${item.lecturerName ?? '—'}</dd>
+            <dt>Phòng học</dt>  <dd>${item.roomName     ?? '—'}</dd>
+            <hr>
+            <dt>Thứ</dt>        <dd>${tkbThuMap[p.thu]  ?? '—'}</dd>
+            <dt>Tiết</dt>       <dd>Tiết ${p.bd} → Tiết ${p.kt}</dd>
+        `;
+        document.getElementById('tkbModalBg').classList.add('show');
+    }
+
+    function tkbOverlayClick(e) {
+        if (e.target === document.getElementById('tkbModalBg')) tkbCloseModal();
+    }
+
+    function tkbCloseModal() {
+        document.getElementById('tkbModalBg').classList.remove('show');
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') tkbCloseModal();
+    });
+</script>

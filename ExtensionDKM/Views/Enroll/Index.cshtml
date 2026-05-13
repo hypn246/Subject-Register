@@ -2,11 +2,11 @@
 @model IEnumerable<ExtensionDKM.DTO.SubjectDTO>
 
 @{
-    ViewData["Title"] = "Enroll class"; 
+    ViewData["Title"] = "Enroll class";
 }
 <style>
-    .max-td{
-        max-width:5rem;
+    .max-td {
+        max-width: 5rem;
     }
 </style>
 
@@ -14,7 +14,7 @@
 
 <style>
     .registration-card {
-        border: 1px solid #005eb8; 
+        border: 1px solid #005eb8;
         border-radius: 8px;
         margin-bottom: 2rem;
         overflow: hidden;
@@ -26,11 +26,11 @@
         background-color: #fff;
     }
 
-    .registration-header h5 {
-        margin: 0;
-        font-size: 1.1rem;
-        color: #333;
-    }
+        .registration-header h5 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #333;
+        }
 
     .schedule-scroll-box {
         max-height: 200px;
@@ -68,133 +68,146 @@
 <div class="container-fluid mt-4 mb-4">
 
     <div class="registration-card">
-        <div class="registration-header">
+        <div class="registration-header" style="display:flex; justify-content:space-between; align-items:center;">
             <h5>
                 Open courses available
-                <span class="text-danger" style="font-size: 0.9rem; font-weight: normal;">@{}</span>
+                <span class="text-danger" style="font-size: 0.9rem; font-weight: normal;">@{
+                }</ span >
             </h5>
+            <input type="text" id="course-search" class="form-control form-control-sm"
+                   placeholder="🔍 Tìm theo tên môn học..."
+                   style="max-width:260px; border:1px solid #005eb8; border-radius:6px;" />
         </div>
 
         <table class="table">
             @Html.AntiForgeryToken()
-        <thead>
-            <tr>
-                <th></th>
-                <th>Course Id</th>
-                <th>Course name</th>
-                <th>School year</th>
-                <th>Semester</th>
-                <th>Thời gian</th>
-                <th>Cap</th>
-                <th>SS hiện tại</th>
-                <th>Remain</th>
-                <th>Lecturer </th>
-                <th>Môn học trước</th>
-                <th>Môn học tiên quyết</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    <input type="checkbox"
-                            class="course-check"
-                            data-id="@item.Id"
-                            data-name="@item.CourseName"
-                            data-time="@item.Time"
-                            data-year="@item.SchoolYear"
-                            data-semester="@item.Semester"
-                            data-ss="@item.SS"
-                            data-lecturer="@item.LecturerName" 
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Course Id</th>
+                    <th>Course name</th>
+                    <th>School year</th>
+                    <th>Semester</th>
+                    <th>Thời gian</th>
+                    <th>Cap</th>
+                    <th>SS hiện tại</th>
+                    <th>Remain</th>
+                    <th>Lecturer </th>
+                    <th>Môn học trước</th>
+                    <th>Môn học tiên quyết</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox"
+                                   class="course-check"
+                                   data-id="@item.Id"
+                                   data-name="@item.CourseName"
+                                   data-time="@item.Time"
+                                   data-year="@item.SchoolYear"
+                                   data-semester="@item.Semester"
+                                   data-ss="@item.SS"
+                                   data-lecturer="@item.LecturerName"
                             @* checked="@(item.IsAssigned)" *@
                             @(item.IsAssigned ? "checked" : "") />
-                </td>
+                        </td>
 
-                <td>@item.CourseId</td>
-                <td>@item.CourseName</td>
-                <td>@Html.DisplayFor(modelItem => item.SchoolYear)</td>
-                <td>@Html.DisplayFor(modelItem => item.Semester)</td>
-                <td>@Html.DisplayFor(modelItem => item.Time)</td>
-                <td>@item.Capacity</td>
-                <td>@item.SS</td>
-                <td>@item.Remain</td>
-                <td>@item.LecturerName</td>
+                        <td>@item.CourseId</td>
+                        <td>@item.CourseName</td>
+                        <td>@Html.DisplayFor(modelItem => item.SchoolYear)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Semester)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Time)</td>
+                        <td>@item.Capacity</td>
+                        <td>@item.SS</td>
+                        <td>@item.Remain</td>
+                        <td>@item.LecturerName</td>
 
-                <td>
-                    @(item.PreviousCourses != null && item.PreviousCourses.Any()
-                        ? string.Join(", ", item.PreviousCourses)
-                        : "None")
-                </td>
+                        <td>
+                            @(item.PreviousCourses != null && item.PreviousCourses.Any()
+                                ? string.Join(", ", item.PreviousCourses)
+                                : "None")
+                        </td>
 
-                <td>
-                    @(item.RequirementCourses != null && item.RequirementCourses.Any()
-                        ? string.Join(", ", item.RequirementCourses)
-                        : "None")
-                </td>
-                <td>
-                    <a asp-controller="Courses" asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                </td>
-            </tr>
-        }
-        </tbody>
+                        <td>
+                            @(item.RequirementCourses != null && item.RequirementCourses.Any()
+                                ? string.Join(", ", item.RequirementCourses)
+                                : "None")
+                        </td>
+                        <td>
+                            <a asp-controller="Courses" asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        </td>
+                    </tr>
+                }
+            </tbody>
         </table>
     </div>
 
 
-<div class="registration-card">
-    <div class="registration-header">
-        <h5>Danh sách môn học đã đăng ký: <span id="total-summary" class="text-danger">{} môn, {} tín chỉ</span></h5>
-    </div>
+    <div class="registration-card">
+        <div class="registration-header">
+            <h5>Danh sách môn học đã đăng ký: <span id="total-summary" class="text-danger">{} môn, {} tín chỉ</span></h5>
+        </div>
         
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table justify-content-center align-items-center text-center">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Mã môn học</th>
-                        <th>Tên môn học</th>
-                        <th>@Html.DisplayNameFor(model => model.SchoolYear)</th>
-                        <th>@Html.DisplayNameFor(model => model.Time)</th>
-                        <th>@Html.DisplayNameFor(model => model.Semester)</th>
-                        <th>@Html.DisplayNameFor(model => model.SS)</th>
-                        <th>Lecturer</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody id="registered-body">
-                    @foreach (var item in Model.Where(x => x.IsAssigned))
-                    {
-                        <tr data-id="@item.Id" class="p-2">
-                            <td>
-                                <input type="checkbox"
-                                        class="registered-check"
-                                        data-id="@item.Id"
-                                        checked />
-                            </td>
-                            <td>@item.CourseId</td>
-                            <td>@item.CourseName</td>
-                            <td>@item.SchoolYear</td>
-                            <td>@item.Time</td>
-                            <td>@item.Semester</td>
-                            <td>@item.SS</td>
-                            <td>@item.LecturerName</td>
-                            <td></td>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table justify-content-center align-items-center text-center">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Mã môn học</th>
+                            <th>Tên môn học</th>
+                            <th>@Html.DisplayNameFor(model => model.SchoolYear)</th>
+                            <th>@Html.DisplayNameFor(model => model.Time)</th>
+                            <th>@Html.DisplayNameFor(model => model.Semester)</th>
+                            <th>@Html.DisplayNameFor(model => model.SS)</th>
+                            <th>Lecturer</th>
+                            <th></th>
                         </tr>
-                    }
-                </tbody>
+                    </thead>
+                    <tbody id="registered-body">
+                        @foreach (var item in Model.Where(x => x.IsAssigned))
+                        {
+                            <tr data-id="@item.Id" class="p-2">
+                                <td>
+                                    <input type="checkbox"
+                                           class="registered-check"
+                                           data-id="@item.Id"
+                                           checked />
+                                </td>
+                                <td>@item.CourseId</td>
+                                <td>@item.CourseName</td>
+                                <td>@item.SchoolYear</td>
+                                <td>@item.Time</td>
+                                <td>@item.Semester</td>
+                                <td>@item.SS</td>
+                                <td>@item.LecturerName</td>
+                                <td></td>
+                            </tr>
+                        }
+                    </tbody>
                 </table>
+            </div>
         </div>
     </div>
-</div>
 
 </div>
 <button class="btn btn-primary">Enroll</button>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+
+        // Search theo tên môn học
+        document.getElementById("course-search").addEventListener("input", function () {
+            const keyword = this.value.trim().toLowerCase();
+            document.querySelectorAll(".registration-card:first-of-type tbody tr").forEach(row => {
+                const courseName = row.cells[2]?.textContent?.toLowerCase() ?? "";
+                row.style.display = courseName.includes(keyword) ? "" : "none";
+            });
+        });
 
         const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
         const registeredBody = document.getElementById("registered-body");
