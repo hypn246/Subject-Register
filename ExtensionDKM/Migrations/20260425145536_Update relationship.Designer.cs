@@ -3,6 +3,7 @@ using ExtensionDKM.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExtensionDKM.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    partial class MyDBContextModelSnapshot : ModelSnapshot
+    [Migration("20260425145536_Update relationship")]
+    partial class Updaterelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,7 +35,7 @@ namespace ExtensionDKM.Migrations
                     b.Property<int>("ClassroomId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CourseId")
+                    b.Property<int>("CourseId")
                         .HasColumnType("int");
 
                     b.Property<int?>("ScoreId")
@@ -174,8 +177,8 @@ namespace ExtensionDKM.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("Capacity")
-                        .HasColumnType("int");
+                    b.Property<string>("Capacity")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -301,14 +304,16 @@ namespace ExtensionDKM.Migrations
             modelBuilder.Entity("ExtensionDKM.Models.Assign", b =>
                 {
                     b.HasOne("ExtensionDKM.Models.Classroom", "Classroom")
-                        .WithMany("Assignments")
+                        .WithMany()
                         .HasForeignKey("ClassroomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ExtensionDKM.Models.Course", null)
+                    b.HasOne("ExtensionDKM.Models.Course", "Course")
                         .WithMany("Assignments")
-                        .HasForeignKey("CourseId");
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("ExtensionDKM.Models.Student", "Student")
                         .WithMany("Assignments")
@@ -317,6 +322,8 @@ namespace ExtensionDKM.Migrations
                         .IsRequired();
 
                     b.Navigation("Classroom");
+
+                    b.Navigation("Course");
 
                     b.Navigation("Student");
                 });
@@ -437,11 +444,6 @@ namespace ExtensionDKM.Migrations
             modelBuilder.Entity("ExtensionDKM.Models.Assign", b =>
                 {
                     b.Navigation("Score");
-                });
-
-            modelBuilder.Entity("ExtensionDKM.Models.Classroom", b =>
-                {
-                    b.Navigation("Assignments");
                 });
 
             modelBuilder.Entity("ExtensionDKM.Models.Course", b =>
