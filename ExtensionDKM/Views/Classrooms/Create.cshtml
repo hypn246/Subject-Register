@@ -51,7 +51,8 @@
                                     <span class="input-group-text bg-light"><i class="bi bi-clock"></i></span>
                                     <select asp-for="Time" class="form-select">
                                         <option value="">---Choose---</option>
-                                        @for (int i = 1; i <= 8; i++)
+                                       @*  theo dang luoi ptu toi da la 45 *@
+                                        @for (int i = 1; i <= 45; i++)
                                         {
                                             <option value="@i">Time @i</option>
                                         }
