@@ -46,7 +46,7 @@
                                 <label asp-for="Tuition" class="form-label fw-bold"></label>
                                 <div class="input-group">
                                     <span class="input-group-text">$</span>
-                                    <input asp-for="Tuition" class="form-control" placeholder="0.00"/>
+                                    <input asp-for="Tuition" class="form-control" placeholder="0.00" readonly />
                                 </div>
                                 <span asp-validation-for="Tuition" class="text-danger"></span>
                             </div>
@@ -93,6 +93,14 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        document.getElementById('Credit').addEventListener('input', function () {
+            const credit = parseFloat(this.value) || 0;
+            const tuition = credit * 750000;
+            document.getElementById('Tuition').value = tuition > 0 ? tuition : '';
+        });
+    </script>
 
     <style>
         /* Tinh chỉnh giao diện */

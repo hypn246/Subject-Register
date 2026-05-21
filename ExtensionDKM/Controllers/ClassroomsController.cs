@@ -50,12 +50,18 @@ namespace ExtensionDKM.Controllers
         // GET: Classrooms/Create
         public async Task<IActionResult> Create()
         {
-            var lecturers = await _context.Users.Where(u => u.Role == UserRole.Lecturer)
-                .ToListAsync();
+            var lecturers = await _context.Users
+         .Where(u => u.Role == UserRole.Lecturer)
+         .ToListAsync();
             ViewData["LecturerId"] = new SelectList(lecturers, "Id", "Name");
-
             ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Name");
             ViewBag.Rooms = await _context.Room.ToListAsync();
+
+            // Thêm dòng này: lấy danh sách {Time, RoomId} đã được đặt
+            ViewBag.BookedRooms = await _context.Classrooms
+                .Select(c => new { c.Time, c.RoomId })
+                .ToListAsync();
+
             return View();
         }
 

@@ -42,16 +42,14 @@
 
                         <hr class="my-4 text-muted" />
 
-
                         <div class="row">
 
                             <div class="col-md-4 mb-3">
                                 <label asp-for="Time" class="form-label fw-bold"></label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light"><i class="bi bi-clock"></i></span>
-                                    <select asp-for="Time" class="form-select">
+                                    <select asp-for="Time" class="form-select" id="timeSelect">
                                         <option value="">---Choose---</option>
-                                       @*  theo dang luoi ptu toi da la 45 *@
                                         @for (int i = 1; i <= 45; i++)
                                         {
                                             <option value="@i">Time @i</option>
@@ -68,15 +66,12 @@
                                     <select asp-for="RoomId"
                                             class="form-select"
                                             id="roomSelect">
-
-                                        <option value="" disabled selected>
-                                            -- Room --
-                                        </option>
-
+                                        <option value="" disabled selected>-- Room --</option>
                                         @foreach (var room in ViewBag.Rooms)
                                         {
                                             <option value="@room.Id"
-                                                    data-capacity="@room.Capacity">
+                                                    data-capacity="@room.Capacity"
+                                                    data-name="@room.Name">
                                                 @room.Name
                                             </option>
                                         }
@@ -87,7 +82,6 @@
 
                             <div class="col-md-4 mb-3">
                                 <label asp-for="Semester" class="form-label fw-bold"></label>
-                                @* base on month *@
                                 <select asp-for="Semester"
                                         class="form-select"
                                         id="semesterSelect">
@@ -103,7 +97,6 @@
                         <div class="row mt-2">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="SchoolYear" class="form-label fw-bold"></label>
-                                @* current year *@
                                 <input asp-for="SchoolYear"
                                        class="form-control"
                                        id="schoolYearInput" />
@@ -114,7 +107,6 @@
                                 <label asp-for="SS" class="form-label fw-bold">Student Size (SS)</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light"><i class="bi bi-people"></i></span>
-                                    @* SS base on class capacity*@
                                     <input asp-for="SS"
                                            class="form-control"
                                            placeholder="Max students..."
@@ -166,6 +158,7 @@
                 border-color: #198754;
                 box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.1);
             }
+
         .input-group-text {
             border-radius: 8px 0 0 8px;
             border-right: none;
@@ -180,41 +173,32 @@
             font-weight: 600;
             padding: 10px 30px;
         }
+
+        option:disabled {
+            color: #aaa;
+            background-color: #f8f9fa;
+        }
     </style>
 }
+
 <script>
+    // =============================================
+    // Script 1: Auto-set Semester & SchoolYear
+    // =============================================
     document.addEventListener("DOMContentLoaded", function () {
-
         const now = new Date();
-
         const month = now.getMonth() + 1;
         const year = now.getFullYear();
 
-        const semesterSelect =
-            document.getElementById("semesterSelect");
-
-        const schoolYearInput =
-            document.getElementById("schoolYearInput");
+        const semesterSelect = document.getElementById("semesterSelect");
+        const schoolYearInput = document.getElementById("schoolYearInput");
 
         let semester = 1;
-
-        // Jan-Apr  => Semester 2
-        // May-Aug  => Semester 3
-        // Sep-Dec  => Semester 1
-
-        if (month >= 1 && month <= 4) {
-            semester = 2;
-        }
-        else if (month >= 5 && month <= 8) {
-            semester = 3;
-        }
-        else {
-            semester = 1;
-        }
+        if (month >= 1 && month <= 4)       semester = 2;
+        else if (month >= 5 && month <= 8)  semester = 3;
+        else                                semester = 1;
 
         semesterSelect.value = semester;
-
-        // visually lock select
         semesterSelect.style.pointerEvents = "none";
         semesterSelect.style.backgroundColor = "#e9ecef";
 
@@ -222,23 +206,20 @@
         schoolYearInput.readOnly = true;
     });
 </script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
 
+<script>
+    // =============================================
+    // Script 2: Auto-fill SS khi chọn Room
+    // =============================================
+    document.addEventListener("DOMContentLoaded", function () {
         const roomSelect = document.getElementById("roomSelect");
         const ssInput = document.getElementById("ssInput");
 
         if (!roomSelect || !ssInput) return;
 
         roomSelect.addEventListener("change", function () {
-
-            const selectedOption =
-                this.options[this.selectedIndex];
-
-            const capacity =
-                selectedOption.dataset.capacity;
-
-            // safety check
+            const selectedOption = this.options[this.selectedIndex];
+            const capacity = selectedOption.dataset.capacity;
             if (capacity) {
                 ssInput.value = capacity;
                 ssInput.disabled = true;
@@ -246,6 +227,64 @@
                 ssInput.value = "";
             }
         });
+    });
+</script>
 
+<script>
+    // =============================================
+    // Script 3: Disable phòng đã bị đặt theo Time
+    // [VẤN ĐỀ 2 - KHÔNG TRÙNG PHÒNG]
+    // =============================================
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // Dữ liệu từ server: danh sách {time, roomId, schoolYear, semester} đã đặt
+        const bookedRooms = @Html.Raw(
+                        System.Text.Json.JsonSerializer.Serialize(ViewBag.BookedRooms)
+                );
+
+        const timeSelect   = document.getElementById("timeSelect");
+        const roomSelect   = document.getElementById("roomSelect");
+        const schoolYearInput = document.getElementById("schoolYearInput");
+        const semesterSelect  = document.getElementById("semesterSelect");
+
+        function updateRoomOptions() {
+            const selectedTime     = parseInt(timeSelect.value);
+            const currentYear      = parseInt(schoolYearInput.value);
+            const currentSemester  = parseInt(semesterSelect.value);
+
+            // Lọc phòng đã bị đặt đúng Time + SchoolYear + Semester
+            const takenRoomIds = bookedRooms
+                .filter(b =>
+                    b.time      === selectedTime    &&
+                    b.schoolYear === currentYear    &&
+                    b.semester  === currentSemester
+                )
+                .map(b => b.roomId);
+
+            Array.from(roomSelect.options).forEach(option => {
+                if (!option.value) return; // bỏ qua placeholder
+
+                const roomId = parseInt(option.value);
+                const baseName = option.dataset.name || option.text.replace(" (Unavailable)", "");
+
+                if (takenRoomIds.includes(roomId)) {
+                    option.disabled = true;
+                    option.text = baseName + " (Unavailable)";
+                } else {
+                    option.disabled = false;
+                    option.text = baseName;
+                }
+            });
+
+            // Nếu phòng đang chọn bị disable thì reset
+            const selected = roomSelect.options[roomSelect.selectedIndex];
+            if (selected && selected.disabled) {
+                roomSelect.value = "";
+                document.getElementById("ssInput").value = "";
+                document.getElementById("ssInput").disabled = false;
+            }
+        }
+
+        timeSelect.addEventListener("change", updateRoomOptions);
     });
 </script>
